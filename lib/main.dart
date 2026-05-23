@@ -1,4 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:uchinaguchi_jisho/screens/top_screen.dart';
+
+final theme = ThemeData(
+  useMaterial3: true,
+  colorScheme: ColorScheme.fromSeed(
+    brightness: Brightness.dark,
+    seedColor: const Color.fromARGB(255, 4, 42, 73),
+  ),
+);
 
 void main() {
   runApp(const MainApp());
@@ -9,12 +18,6 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
-      ),
-    );
+    return MaterialApp(theme: theme, home: TopScreen());
   }
 }
