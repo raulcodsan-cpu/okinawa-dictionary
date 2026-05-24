@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:uchinaguchi_jisho/data/database_helper.dart';
 
-class JapSearchScreen extends StatefulWidget {
-  const JapSearchScreen({super.key});
+class SearchScreen extends StatefulWidget {
+  const SearchScreen({super.key});
 
   @override
-  State<JapSearchScreen> createState() => _JapSearchScreenState();
+  State<SearchScreen> createState() => _SearchScreenState();
 }
 
-class _JapSearchScreenState extends State<JapSearchScreen> {
+class _SearchScreenState extends State<SearchScreen> {
   final _formKey = GlobalKey<FormState>();
   List<Map<String, dynamic>> _loadedQuery = [];
 
