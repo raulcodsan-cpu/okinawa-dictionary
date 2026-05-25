@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uchinaguchi_jisho/data/database_provider.dart';
+import 'package:uchinaguchi_jisho/screens/entry_screen.dart';
+import 'package:uchinaguchi_jisho/widgets/search_entry.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
@@ -81,14 +83,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   focusColor: Colors.white,
                 ),
                 onChanged: _onInputChange,
-                /* (value) async {
-                  final result = await ref
-                      .read(databaseProvider.notifier)
-                      .searchWords(value);
-                  setState(() {
-                    _loadedQuery = result;
-                  });
-                } */
               ),
             ),
             SizedBox(height: 20),
@@ -97,9 +91,13 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 itemCount: _loadedQuery.length,
                 itemBuilder: (context, index) {
                   final word = _loadedQuery[index];
-                  return ListTile(
-                    title: Text(word['okinawan'] ?? ''),
-                    subtitle: Text(word['japanese'] ?? ''),
+                  return SearchEntry(
+                    word: word,
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => EntryScreen(word: word),
+                      ),
+                    ),
                   );
                 },
               ),
