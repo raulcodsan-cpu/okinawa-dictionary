@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:uchinaguchi_jisho/screens/top_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:uchinaguchi_jisho/screens/search_screen.dart';
 
 final theme = ThemeData(
   useMaterial3: true,
@@ -10,7 +11,7 @@ final theme = ThemeData(
 );
 
 void main() {
-  runApp(const MainApp());
+  runApp(ProviderScope(child: MainApp()));
 }
 
 class MainApp extends StatelessWidget {
@@ -18,6 +19,6 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(theme: theme, home: TopScreen());
+    return MaterialApp(theme: theme, home: SearchScreen());
   }
 }

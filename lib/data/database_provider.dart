@@ -1,13 +1,13 @@
 import 'dart:io';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-class DatabaseHelper {
-  static final DatabaseHelper instance = DatabaseHelper._init();
-  static Database? _database;
+class DatabaseProvider extends StateNotifier<List<Map<String, dynamic>>> {
+  DatabaseProvider() : super(const []);
 
-  DatabaseHelper._init();
+  static Database? _database;
 
   Future<Database> get database async {
     if (_database != null) return _database!;
@@ -51,9 +51,9 @@ class DatabaseHelper {
     return await openDatabase(path);
   }
 
-  // SEARCH METHOD (same as before)
+  // Search
   Future<List<Map<String, dynamic>>> searchWords(String query) async {
-    final db = await instance.database;
+    final db = await database;
     return await db.query(
       'dictionary',
       where: 'okinawan LIKE ? OR japanese LIKE ? OR tags LIKE ?',
@@ -61,3 +61,8 @@ class DatabaseHelper {
     );
   }
 }
+
+final databaseProvider =
+    StateNotifierProvider<DatabaseProvider, List<Map<String, dynamic>>>(
+      (ref) => DatabaseProvider(),
+    );
