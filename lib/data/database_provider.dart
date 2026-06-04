@@ -11,7 +11,7 @@ class DatabaseProvider extends StateNotifier<List<Map<String, dynamic>>> {
 
   Future<Database> get database async {
     if (_database != null) return _database!;
-    _database = await _initPrepopulatedDB('okinawan_dictionary.db');
+    _database = await _initPrepopulatedDB('okinawa_pandas.db');
     return _database!;
   }
 
@@ -54,10 +54,15 @@ class DatabaseProvider extends StateNotifier<List<Map<String, dynamic>>> {
   // Search
   Future<List<Map<String, dynamic>>> searchWords(String query) async {
     final db = await database;
+    final tables = await db.rawQuery(
+      "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'",
+    );
+    tables.forEach((table) => print(table['name']));
+
     return await db.query(
       'dictionary',
-      where: 'okinawan LIKE ? OR japanese LIKE ? OR tags LIKE ?',
-      whereArgs: ['%$query%', '%$query%', '%$query%'],
+      where: 'kana LIKE ? OR word LIKE ?', //OR tags LIKE ?
+      whereArgs: ['%$query%', '%$query%'], //'%$query%'
     );
   }
 }

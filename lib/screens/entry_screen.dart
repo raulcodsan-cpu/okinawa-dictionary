@@ -16,9 +16,9 @@ class EntryScreen extends StatelessWidget {
           children: [
             Center(
               child: Hero(
-                tag: word['okinawan'],
+                tag: word['word'],
                 child: Text(
-                  word['okinawan'],
+                  word['word'],
                   style: TextStyle(
                     fontSize: 40,
                     color: Colors.white,
@@ -32,10 +32,7 @@ class EntryScreen extends StatelessWidget {
             SizedBox(width: 0.0, height: 50),
             Text('意味：'),
             Row(
-              children: [
-                SizedBox(width: 50, height: 0.0),
-                Text(word['japanese']),
-              ],
+              children: [SizedBox(width: 50, height: 0.0), Text(word['kana'])],
             ),
             Text('発音：'),
             Row(
