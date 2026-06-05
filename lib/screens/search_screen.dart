@@ -36,7 +36,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       return;
     }
 
-    _inputTimer = Timer(const Duration(milliseconds: 300), () async {
+    _inputTimer = Timer(const Duration(milliseconds: 500), () async {
       setState(() {
         _isLoading = true;
       });

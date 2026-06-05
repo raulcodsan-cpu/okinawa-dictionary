@@ -12,39 +12,33 @@ class SearchEntry extends StatefulWidget {
 class _SearchEntryState extends State<SearchEntry> {
   @override
   Widget build(BuildContext context) {
-    return Hero(
-      tag: widget.word['okinawan'],
-      child: Card(
-        //color: Theme.of(context).canvasColor,
-        //elevation: 0,
-        child: ListTile(
-          title: Row(
-            spacing: 10,
-            children: [
-              Text(
-                widget.word['okinawan'],
-                style: TextStyle(
-                  fontSize: 20,
-                  color: Colors.white,
-                  decoration: TextDecoration.none,
-                  fontWeight: FontWeight.normal,
-                ),
+    return Card(
+      //color: Theme.of(context).canvasColor,
+      //elevation: 0,
+      child: ListTile(
+        title: Row(
+          spacing: 10,
+          children: [
+            Text(
+              widget.word['word'],
+              style: TextStyle(
+                fontSize: 20,
+                color: Colors.white,
+                decoration: TextDecoration.none,
+                fontWeight: FontWeight.normal,
               ),
-              Text(
-                '「Alphabet pronuntiantion」',
-                style: TextStyle(fontSize: 12, color: Colors.white54),
-              ),
-            ],
-          ),
-          subtitle: Text(widget.word['japanese']),
-          hoverColor: Colors.white24,
-          focusColor: Colors.white12,
-          onTap: widget.onTap,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 8,
-          ),
+            ),
+            Text(
+              widget.word['ipa'] ?? '',
+              style: TextStyle(fontSize: 12, color: Colors.white54),
+            ),
+          ],
         ),
+        subtitle: Text(widget.word['kana']),
+        hoverColor: Colors.white24,
+        focusColor: Colors.white12,
+        onTap: widget.onTap,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       ),
     );
   }

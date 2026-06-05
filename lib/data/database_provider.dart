@@ -10,7 +10,9 @@ class DatabaseProvider extends StateNotifier<List<Map<String, dynamic>>> {
   static Database? _database;
 
   Future<Database> get database async {
-    if (_database != null) return _database!;
+    if (_database != null) {
+      return _database!;
+    }
     _database = await _initPrepopulatedDB('okinawa_pandas.db');
     return _database!;
   }
@@ -61,8 +63,8 @@ class DatabaseProvider extends StateNotifier<List<Map<String, dynamic>>> {
 
     return await db.query(
       'dictionary',
-      where: 'kana LIKE ? OR word LIKE ?', //OR tags LIKE ?
-      whereArgs: ['%$query%', '%$query%'], //'%$query%'
+      where: 'word LIKE ? OR kana LIKE ? OR meaning1 LIKE ?',
+      whereArgs: ['%$query%', '%$query%', '%$query%'],
     );
   }
 }

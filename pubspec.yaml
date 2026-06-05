@@ -22,4 +22,4 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/okinawan_dictionary.db
+    - assets/okinawa_pandas.db
