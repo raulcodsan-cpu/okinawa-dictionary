@@ -53,7 +53,12 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('標準語⇔しまくとぅば')),
+      appBar: AppBar(
+        title: Text(
+          '沖縄辞典',
+          style: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 30),
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(

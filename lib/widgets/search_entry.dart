@@ -16,25 +16,52 @@ class _SearchEntryState extends State<SearchEntry> {
       //color: Theme.of(context).canvasColor,
       //elevation: 0,
       child: ListTile(
-        title: Row(
-          spacing: 10,
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              widget.word['word'],
-              style: TextStyle(
-                fontSize: 20,
-                color: Colors.white,
-                decoration: TextDecoration.none,
-                fontWeight: FontWeight.normal,
+            Row(
+              spacing: 10,
+              children: [
+                Text(
+                  //Some words do not have kana attached yet, so we test to empty.
+                  widget.word['kana'].isNotEmpty
+                      ? widget.word['kana'].toString().replaceAll(
+                          RegExp(r"[\[\]']"),
+                          '',
+                        )
+                      : widget.word['word'],
+                  //Code to replaces everything that matches the Regular Expression.
+                  //The syntax for RegExp:
+                  //r"": raw string.
+                  //Outside []: any single character to match (checklist)
+                  // '\[' & '\]' : '\' escape char
+                  // ' : '
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: Colors.white,
+                    decoration: TextDecoration.none,
+                    fontWeight: FontWeight.normal,
+                  ),
+                ),
+                Text(
+                  widget.word['ipa'] ?? '',
+                  style: TextStyle(fontSize: 12, color: Colors.white54),
+                ),
+              ],
+            ),
+            Container(
+              alignment: AlignmentGeometry.centerLeft,
+              height: 50,
+              width: 200,
+              child: Text(
+                widget.word['meaning1'],
+                style: TextStyle(fontSize: 15),
               ),
             ),
-            Text(
-              widget.word['ipa'] ?? '',
-              style: TextStyle(fontSize: 12, color: Colors.white54),
-            ),
+            SizedBox(width: 0.0, height: 10),
           ],
         ),
-        subtitle: Text(widget.word['kana']),
+        subtitle: Text(widget.word['word']),
         hoverColor: Colors.white24,
         focusColor: Colors.white12,
         onTap: widget.onTap,

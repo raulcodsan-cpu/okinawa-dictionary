@@ -56,10 +56,14 @@ class DatabaseProvider extends StateNotifier<List<Map<String, dynamic>>> {
   // Search
   Future<List<Map<String, dynamic>>> searchWords(String query) async {
     final db = await database;
+
+    /*     ---- SQL table debug code ---- 
     final tables = await db.rawQuery(
       "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'",
     );
-    tables.forEach((table) => print(table['name']));
+      for (var table in tables) {
+      print(table['name']);
+    } */
 
     return await db.query(
       'dictionary',
