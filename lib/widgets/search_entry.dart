@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:uchinaguchi_jisho/models/word_item.dart';
 
 class SearchEntry extends StatefulWidget {
   const SearchEntry({super.key, required this.word, required this.onTap});
-  final Map<String, dynamic> word;
+  final WordItem word;
   final Function() onTap;
 
   @override
@@ -22,14 +23,20 @@ class _SearchEntryState extends State<SearchEntry> {
             Row(
               spacing: 10,
               children: [
+                //region Title
                 Text(
                   //Some words do not have kana attached yet, so we test to empty.
-                  widget.word['kana'].isNotEmpty
+                  widget.word.kana.isNotEmpty
+                      ? widget.word.kana
+                      : widget.word.word,
+                  /*
+                  isNotEmpty
                       ? widget.word['kana'].toString().replaceAll(
                           RegExp(r"[\[\]']"),
                           '',
                         )
-                      : widget.word['word'],
+                      : 
+                   */
                   //Code to replaces everything that matches the Regular Expression.
                   //The syntax for RegExp:
                   //r"": raw string.
@@ -37,16 +44,18 @@ class _SearchEntryState extends State<SearchEntry> {
                   // '\[' & '\]' : '\' escape char
                   // ' : '
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 18,
                     color: Colors.white,
                     decoration: TextDecoration.none,
                     fontWeight: FontWeight.normal,
                   ),
-                ),
+                ), //endregion
+                //region IPA
                 Text(
-                  widget.word['ipa'] ?? '',
+                  widget.word.ipa,
                   style: TextStyle(fontSize: 12, color: Colors.white54),
                 ),
+                //endregion
               ],
             ),
             Container(
@@ -54,14 +63,21 @@ class _SearchEntryState extends State<SearchEntry> {
               height: 50,
               width: 200,
               child: Text(
-                widget.word['meaning1'],
-                style: TextStyle(fontSize: 15),
+                widget.word.meaning1,
+                style: TextStyle(fontSize: 15, fontStyle: FontStyle.italic),
               ),
             ),
-            SizedBox(width: 0.0, height: 10),
+            SizedBox(width: 0.0, height: 5),
           ],
         ),
-        subtitle: Text(widget.word['word']),
+        subtitle: SizedBox(
+          height: 20,
+          width: 100,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [Text(widget.word.word), Text(widget.word.id.toString())],
+          ),
+        ),
         hoverColor: Colors.white24,
         focusColor: Colors.white12,
         onTap: widget.onTap,

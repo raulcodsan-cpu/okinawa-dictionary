@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:uchinaguchi_jisho/models/word_item.dart';
 
 class DatabaseProvider extends StateNotifier<List<Map<String, dynamic>>> {
   DatabaseProvider() : super(const []);
@@ -54,7 +55,7 @@ class DatabaseProvider extends StateNotifier<List<Map<String, dynamic>>> {
   }
 
   // Search
-  Future<List<Map<String, dynamic>>> searchWords(String query) async {
+  Future<List<WordItem>> searchWords(String query) async {
     final db = await database;
 
     /*     ---- SQL table debug code ---- 
@@ -65,11 +66,64 @@ class DatabaseProvider extends StateNotifier<List<Map<String, dynamic>>> {
       print(table['name']);
     } */
 
-    return await db.query(
+    final loadedItems = await (db.query(
       'dictionary',
       where: 'word LIKE ? OR kana LIKE ? OR meaning1 LIKE ?',
       whereArgs: ['%$query%', '%$query%', '%$query%'],
+    ));
+
+    final List<WordItem> loadedWords = [];
+    for (var element in loadedItems) {
+      final kana = element['kana'].toString().replaceAll(
+        RegExp(r"[\[\]']"),
+        '',
+      );
+      loadedWords.add(
+        WordItem(
+          id: element['id'] as int,
+          word: element['word'] as String,
+          ipa: element['ipa'] == null ? '' : element['ipa'] as String,
+          kana: kana,
+          meaning1: element['meaning1'] as String,
+          //meaning2: element['meaning2'].toString().isNotEmpty?.toString():'',
+          //meaning3: element['meaning3'] as String,
+        ),
+      );
+    }
+    return loadedWords;
+  }
+
+  //Search adjacent words (for entry_screen)
+  Future<List<WordItem>> searchAdjacent(int wordId) async {
+    final db = await database;
+
+    // --------------------------------------- Take note ------------------------
+    final result = await db.query(
+      'dictionary',
+      where: 'id IN (?, ?)',
+      whereArgs: [wordId + 1, wordId - 1],
     );
+
+    final List<WordItem> loadedWords = [];
+    for (var element in result) {
+      final kana = element['kana'].toString().replaceAll(
+        RegExp(r"[\[\]']"),
+        '',
+      );
+      loadedWords.add(
+        WordItem(
+          id: element['id'] as int,
+          word: element['word'] as String,
+          ipa: element['ipa'] == null ? '' : element['ipa'] as String,
+          kana: kana,
+          meaning1: element['meaning1'] as String,
+          //meaning2: element['meaning2'] as String,
+          //meaning3: element['meaning3'] as String,
+        ),
+      );
+    }
+
+    return loadedWords;
   }
 }
 
