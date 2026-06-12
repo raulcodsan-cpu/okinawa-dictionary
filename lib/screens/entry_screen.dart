@@ -14,7 +14,7 @@ class EntryScreen extends ConsumerWidget {
         .read(databaseProvider.notifier)
         .searchAdjacent(word.id);
 
-    void onPressed(WordItem adjacentWord) {
+    void onAdjacentPressed(WordItem adjacentWord) {
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => EntryScreen(word: adjacentWord),
@@ -22,8 +22,16 @@ class EntryScreen extends ConsumerWidget {
       );
     }
 
+    void onHomePressed() {
+      Navigator.of(context).popUntil(ModalRoute.withName('SearchScreen'));
+    }
+
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        actions: [
+          IconButton(onPressed: onHomePressed, icon: Icon(Icons.clear_rounded)),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(30.0),
         child: Column(
@@ -66,13 +74,6 @@ class EntryScreen extends ConsumerWidget {
               ],
             ),
             SizedBox(width: 0.0, height: 40),
-            /* Row(
-              children: [
-                Text('次の項目：'),
-                SizedBox(width: 40, height: 0.0),
-                Text('前の項目：'),
-              ],
-            ), */
             FutureBuilder(
               future: adjacentWords,
               builder: (context, snapshot) {
@@ -86,43 +87,8 @@ class EntryScreen extends ConsumerWidget {
 
                 return AdjacentWords(
                   adjacentWords: snapshot.data!,
-                  onPressed: onPressed,
+                  onPressed: onAdjacentPressed,
                 );
-
-                /* Table(
-                  children: [
-                    TableRow(children: [Text('前の単語'), Text('次の単語')]),
-                    TableRow(
-                      children: [
-                        TextButton(
-                          style: ButtonStyle(
-                            alignment: AlignmentGeometry.centerLeft,
-                            padding: WidgetStatePropertyAll(
-                              EdgeInsetsGeometry.symmetric(vertical: 8),
-                            ),
-                          ),
-                          child: Text(snapshot.data![0].kana),
-                          onPressed: () => onPressed(snapshot.data![0]),
-                        ),
-                        TextButton(
-                          style: ButtonStyle(
-                            alignment: AlignmentGeometry.centerLeft,
-                            padding: WidgetStatePropertyAll(
-                              EdgeInsetsGeometry.symmetric(vertical: 8),
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              Text(snapshot.data![1].kana),
-                              Text('[${snapshot.data![1].word}]',style: TextStyle(fontSize: 12, color: Colors.white54))
-                            ],
-                          ),
-                          onPressed: () => onPressed(snapshot.data![1]),
-                        ),
-                      ],
-                    ),
-                  ],
-                ); */
               },
             ),
           ],

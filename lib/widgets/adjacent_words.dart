@@ -14,47 +14,64 @@ class AdjacentWords extends StatelessWidget {
   Widget build(BuildContext context) {
     return Table(
       children: [
-        TableRow(children: [Text('前の単語'), Text('次の単語')]),
+        TableRow(
+          children: [
+            Row(
+              children: [
+                Text('前の単語', textAlign: TextAlign.start),
+                Text(
+                  '(${adjacentWords[0].id.toString()})',
+                  style: TextStyle(fontSize: 15, color: Colors.white54),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Text('次の単語', textAlign: TextAlign.start),
+                Text(
+                  '(${adjacentWords[1].id.toString()})',
+                  style: TextStyle(fontSize: 15, color: Colors.white54),
+                ),
+              ],
+            ),
+          ],
+        ),
         TableRow(
           children: [
             TextButton(
               style: ButtonStyle(
-                alignment: AlignmentGeometry.centerLeft,
+                alignment: AlignmentGeometry.bottomLeft,
                 padding: WidgetStatePropertyAll(
-                  EdgeInsetsGeometry.symmetric(vertical: 8),
+                  EdgeInsetsGeometry.only(top: 8),
                 ),
               ),
-              child: Row(
-                children: [
-                  Text(adjacentWords[1].kana),
-                  Text(
-                    '[${adjacentWords[1].word}]',
-                    style: TextStyle(fontSize: 12, color: Colors.white54),
-                  ),
-                ],
-              ),
+              child: Text(adjacentWords[1].kana),
               onPressed: () => onPressed(adjacentWords[0]),
             ),
             TextButton(
               style: ButtonStyle(
-                alignment: AlignmentGeometry.centerLeft,
+                alignment: AlignmentGeometry.bottomLeft,
                 padding: WidgetStatePropertyAll(
-                  EdgeInsetsGeometry.symmetric(vertical: 8),
+                  EdgeInsetsGeometry.only(top: 8),
                 ),
               ),
-              child: Row(
-                children: [
-                  Text(adjacentWords[1].kana),
-                  Text(
-                    '[${adjacentWords[1].word}]',
-                    style: TextStyle(fontSize: 12, color: Colors.white54),
-                  ),
-                ],
-              ),
+              child: Text(adjacentWords[1].kana),
               onPressed: () => onPressed(adjacentWords[1]),
             ),
           ],
         ),
+        /* TableRow(
+          children: [
+            Text(
+              '[${adjacentWords[0].word}]',
+              style: TextStyle(fontSize: 15, color: Colors.white54),
+            ),
+            Text(
+              '[${adjacentWords[1].word}]',
+              style: TextStyle(fontSize: 15, color: Colors.white54),
+            ),
+          ],
+        ), */
       ],
     );
   }

@@ -29,20 +29,6 @@ class _SearchEntryState extends State<SearchEntry> {
                   widget.word.kana.isNotEmpty
                       ? widget.word.kana
                       : widget.word.word,
-                  /*
-                  isNotEmpty
-                      ? widget.word['kana'].toString().replaceAll(
-                          RegExp(r"[\[\]']"),
-                          '',
-                        )
-                      : 
-                   */
-                  //Code to replaces everything that matches the Regular Expression.
-                  //The syntax for RegExp:
-                  //r"": raw string.
-                  //Outside []: any single character to match (checklist)
-                  // '\[' & '\]' : '\' escape char
-                  // ' : '
                   style: TextStyle(
                     fontSize: 18,
                     color: Colors.white,

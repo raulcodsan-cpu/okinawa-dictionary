@@ -19,6 +19,10 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(theme: theme, home: SearchScreen());
+    return MaterialApp(
+      theme: theme,
+      initialRoute: 'SearchScreen',
+      routes: {'SearchScreen': (context) => SearchScreen()},
+    );
   }
 }
