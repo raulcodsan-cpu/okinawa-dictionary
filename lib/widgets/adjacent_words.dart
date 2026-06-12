@@ -12,6 +12,8 @@ class AdjacentWords extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final previousWord = adjacentWords[0];
+    final nextWord = adjacentWords[1];
     return Table(
       children: [
         TableRow(
@@ -20,8 +22,8 @@ class AdjacentWords extends StatelessWidget {
               children: [
                 Text('前の単語', textAlign: TextAlign.start),
                 Text(
-                  '(${adjacentWords[0].id.toString()})',
-                  style: TextStyle(fontSize: 15, color: Colors.white54),
+                  '(${previousWord.id.toString()})',
+                  style: Theme.of(context).textTheme.labelSmall,
                 ),
               ],
             ),
@@ -29,8 +31,8 @@ class AdjacentWords extends StatelessWidget {
               children: [
                 Text('次の単語', textAlign: TextAlign.start),
                 Text(
-                  '(${adjacentWords[1].id.toString()})',
-                  style: TextStyle(fontSize: 15, color: Colors.white54),
+                  '(${nextWord.id.toString()})',
+                  style: Theme.of(context).textTheme.labelSmall,
                 ),
               ],
             ),
@@ -45,8 +47,11 @@ class AdjacentWords extends StatelessWidget {
                   EdgeInsetsGeometry.only(top: 8),
                 ),
               ),
-              child: Text(adjacentWords[1].kana),
-              onPressed: () => onPressed(adjacentWords[0]),
+              child: Text(
+                previousWord.kana,
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+              onPressed: () => onPressed(previousWord),
             ),
             TextButton(
               style: ButtonStyle(
@@ -55,23 +60,14 @@ class AdjacentWords extends StatelessWidget {
                   EdgeInsetsGeometry.only(top: 8),
                 ),
               ),
-              child: Text(adjacentWords[1].kana),
-              onPressed: () => onPressed(adjacentWords[1]),
+              child: Text(
+                nextWord.kana,
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+              onPressed: () => onPressed(nextWord),
             ),
           ],
         ),
-        /* TableRow(
-          children: [
-            Text(
-              '[${adjacentWords[0].word}]',
-              style: TextStyle(fontSize: 15, color: Colors.white54),
-            ),
-            Text(
-              '[${adjacentWords[1].word}]',
-              style: TextStyle(fontSize: 15, color: Colors.white54),
-            ),
-          ],
-        ), */
       ],
     );
   }

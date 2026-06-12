@@ -39,35 +39,34 @@ class EntryScreen extends ConsumerWidget {
           spacing: 10,
           children: [
             Center(
-              child: Text(
-                word.word,
-                style: TextStyle(
-                  fontSize: 40,
-                  color: Colors.white,
-                  decoration: TextDecoration.none,
-                  fontWeight: FontWeight.normal,
-                ),
-                textAlign: TextAlign.center,
+              child: Column(
+                children: [
+                  Text(
+                    word.word,
+                    style: Theme.of(context).textTheme.titleLarge,
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    '(${word.id})',
+                    style: Theme.of(context).textTheme.labelLarge,
+                  ),
+                ],
               ),
             ),
             SizedBox(width: 0.0, height: 50),
             Text('カナ：'),
-            Row(
-              children: [
-                SizedBox(width: 50, height: 0.0),
-                Text(word.kana.toString().replaceAll(RegExp(r"[\[\]']"), '')),
-              ],
-            ),
+            Row(children: [SizedBox(width: 30, height: 0.0), Text(word.kana)]),
             Text('発音：'),
-            Row(children: [SizedBox(width: 50, height: 0.0), Text(word.ipa)]),
+            Row(children: [SizedBox(width: 30, height: 0.0), Text(word.ipa)]),
             Text('説明：'),
             Row(
               children: [
-                SizedBox(width: 50, height: 0.0),
+                SizedBox(width: 30, height: 0.0),
                 Expanded(
                   child: Text(
                     word.meaning1,
-                    maxLines: 3,
+                    // --------------------------  Check explanation getting cut ------------------------------
+                    //maxLines: 6,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ),

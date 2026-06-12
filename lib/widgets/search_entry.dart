@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:uchinaguchi_jisho/models/word_item.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 class SearchEntry extends StatefulWidget {
   const SearchEntry({super.key, required this.word, required this.onTap});
@@ -21,27 +22,28 @@ class _SearchEntryState extends State<SearchEntry> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              mainAxisSize: MainAxisSize.min,
               spacing: 10,
               children: [
-                //region Title
-                Text(
-                  //Some words do not have kana attached yet, so we test to empty.
-                  widget.word.kana.isNotEmpty
-                      ? widget.word.kana
-                      : widget.word.word,
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.white,
-                    decoration: TextDecoration.none,
-                    fontWeight: FontWeight.normal,
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 220),
+                  child: AutoSizeText(
+                    //Some words do not have kana attached yet, so we test to empty.
+                    widget.word.kana.isNotEmpty
+                        ? widget.word.kana
+                        : widget.word.word,
+                    style: Theme.of(context).textTheme.titleMedium,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
-                ), //endregion
-                //region IPA
-                Text(
-                  widget.word.ipa,
-                  style: TextStyle(fontSize: 12, color: Colors.white54),
                 ),
-                //endregion
+                Expanded(
+                  child: Text(
+                    widget.word.ipa,
+                    style: Theme.of(context).textTheme.labelSmall,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
               ],
             ),
             Container(
