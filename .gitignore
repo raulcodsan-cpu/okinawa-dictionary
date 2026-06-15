@@ -11,9 +11,12 @@
 .svn/
 .swiftpm/
 migrate_working_dir/
-
+/windows/
+/macos/
+/linux/
 /android/
-pubspec.lock
+/web/
+/ios/
 
 # IntelliJ related
 *.iml
