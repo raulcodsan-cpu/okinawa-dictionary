@@ -51,7 +51,7 @@ class _SearchEntryState extends State<SearchEntry> {
               height: 50,
               width: 200,
               child: Text(
-                widget.word.meaning1,
+                widget.word.meanings[0],
                 style: TextStyle(fontSize: 15, fontStyle: FontStyle.italic),
               ),
             ),

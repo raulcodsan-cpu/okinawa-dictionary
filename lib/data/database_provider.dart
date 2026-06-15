@@ -74,19 +74,26 @@ class DatabaseProvider extends StateNotifier<List<Map<String, dynamic>>> {
 
     final List<WordItem> loadedWords = [];
     for (var element in loadedItems) {
+      final List<String> loadedMeanings = [];
       final kana = element['kana'].toString().replaceAll(
         RegExp(r"[\[\]']"),
         '',
       );
+      //Convert meanings to a List to use later for ListBuilder.
+      for (var i = 1; i <= 3; i++) {
+        if (element['meaning$i'] == null) {
+          continue;
+        }
+        loadedMeanings.add(element['meaning$i'].toString());
+      }
+
       loadedWords.add(
         WordItem(
           id: element['id'] as int,
           word: element['word'] as String,
           ipa: element['ipa'] == null ? '' : element['ipa'] as String,
           kana: kana,
-          meaning1: element['meaning1'] as String,
-          //meaning2: element['meaning2'].toString().isNotEmpty?.toString():'',
-          //meaning3: element['meaning3'] as String,
+          meanings: loadedMeanings,
         ),
       );
     }
@@ -97,7 +104,9 @@ class DatabaseProvider extends StateNotifier<List<Map<String, dynamic>>> {
   Future<List<WordItem>> searchAdjacent(int wordId) async {
     final db = await database;
 
-    // --------------------------------------- Take note ------------------------
+    //TODO: Handle case first and last word.
+    //TODO: Comment on the function.
+
     final result = await db.query(
       'dictionary',
       where: 'id IN (?, ?)',
@@ -106,19 +115,26 @@ class DatabaseProvider extends StateNotifier<List<Map<String, dynamic>>> {
 
     final List<WordItem> loadedWords = [];
     for (var element in result) {
+      final List<String> loadedMeanings = [];
       final kana = element['kana'].toString().replaceAll(
         RegExp(r"[\[\]']"),
         '',
       );
+      //Convert meanings to a List to use later for ListBuilder.
+      for (var i = 1; i <= 3; i++) {
+        if (element['meaning$i'] == null) {
+          continue;
+        }
+        loadedMeanings.add(element['meaning$i'].toString());
+      }
+
       loadedWords.add(
         WordItem(
           id: element['id'] as int,
           word: element['word'] as String,
           ipa: element['ipa'] == null ? '' : element['ipa'] as String,
           kana: kana,
-          meaning1: element['meaning1'] as String,
-          //meaning2: element['meaning2'] as String,
-          //meaning3: element['meaning3'] as String,
+          meanings: loadedMeanings,
         ),
       );
     }

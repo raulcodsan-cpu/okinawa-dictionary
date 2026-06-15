@@ -59,36 +59,39 @@ class EntryScreen extends ConsumerWidget {
             Text('発音：'),
             Row(children: [SizedBox(width: 30, height: 0.0), Text(word.ipa)]),
             Text('説明：'),
-            Row(
-              children: [
-                SizedBox(width: 30, height: 0.0),
-                Expanded(
-                  child: Text(
-                    word.meaning1,
-                    // --------------------------  Check explanation getting cut ------------------------------
-                    //maxLines: 6,
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                ),
-              ],
+            ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: 290),
+              child: ListView.separated(
+                shrinkWrap: true,
+                padding: EdgeInsets.fromLTRB(30, 10, 10, 20),
+                itemCount: word.meanings.length,
+                itemBuilder: (context, index) => Text(word.meanings[index]),
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 15),
+              ),
             ),
-            SizedBox(width: 0.0, height: 40),
-            FutureBuilder(
-              future: adjacentWords,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                }
+            SizedBox(
+              height: 150,
+              width: 350,
+              child: FutureBuilder(
+                future: adjacentWords,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  }
 
-                if (snapshot.hasError || snapshot.data!.isEmpty) {
-                  return Center(child: Text('Error retrieving adjacent words'));
-                }
+                  if (snapshot.hasError || snapshot.data!.isEmpty) {
+                    return Center(
+                      child: Text('Error retrieving adjacent words'),
+                    );
+                  }
 
-                return AdjacentWords(
-                  adjacentWords: snapshot.data!,
-                  onPressed: onAdjacentPressed,
-                );
-              },
+                  return AdjacentWords(
+                    adjacentWords: snapshot.data!,
+                    onPressed: onAdjacentPressed,
+                  );
+                },
+              ),
             ),
           ],
         ),

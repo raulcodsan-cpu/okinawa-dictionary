@@ -4,15 +4,11 @@ class WordItem {
     required this.word,
     required this.ipa,
     required this.kana,
-    required this.meaning1,
-    this.meaning2 = '',
-    this.meaning3 = '',
+    required this.meanings,
   });
   final int id;
   final String word;
   final String ipa;
-  final String meaning1;
-  String meaning2;
-  String meaning3;
+  final List<String> meanings;
   String kana;
 }
