@@ -34,66 +34,76 @@ class EntryScreen extends ConsumerWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(30.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 10,
-          children: [
-            Center(
-              child: Column(
-                children: [
-                  Text(
-                    word.word,
-                    style: Theme.of(context).textTheme.titleLarge,
-                    textAlign: TextAlign.center,
+        child: InteractiveViewer(
+          minScale: 0.5,
+          maxScale: 5.0,
+          child: SingleChildScrollView(
+            //----------------------- TODO: Take note ---------------------
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 10,
+              children: [
+                Center(
+                  child: Column(
+                    children: [
+                      Text(
+                        word.word,
+                        style: Theme.of(context).textTheme.titleLarge,
+                        textAlign: TextAlign.center,
+                      ),
+                      Text(
+                        '(${word.id})',
+                        style: Theme.of(context).textTheme.labelLarge,
+                      ),
+                    ],
                   ),
-                  Text(
-                    '(${word.id})',
-                    style: Theme.of(context).textTheme.labelLarge,
+                ),
+                SizedBox(width: 0.0, height: 30),
+                Text('カナ：'),
+                Row(
+                  children: [SizedBox(width: 30, height: 0.0), Text(word.kana)],
+                ),
+                Text('発音：'),
+                Row(
+                  children: [SizedBox(width: 30, height: 0.0), Text(word.ipa)],
+                ),
+                Text('説明：'),
+                Padding(
+                  padding: EdgeInsetsGeometry.symmetric(horizontal: 30),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      for (final entries in word.meanings) ...[
+                        //----------------------- TODO: Take note ---------------
+                        Text(entries),
+                        const SizedBox(height: 10),
+                      ],
+                    ],
                   ),
-                ],
-              ),
-            ),
-            SizedBox(width: 0.0, height: 50),
-            Text('カナ：'),
-            Row(children: [SizedBox(width: 30, height: 0.0), Text(word.kana)]),
-            Text('発音：'),
-            Row(children: [SizedBox(width: 30, height: 0.0), Text(word.ipa)]),
-            Text('説明：'),
-            ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: 290),
-              child: ListView.separated(
-                shrinkWrap: true,
-                padding: EdgeInsets.fromLTRB(30, 10, 10, 20),
-                itemCount: word.meanings.length,
-                itemBuilder: (context, index) => Text(word.meanings[index]),
-                separatorBuilder: (context, index) =>
-                    const SizedBox(height: 15),
-              ),
-            ),
-            SizedBox(
-              height: 150,
-              width: 350,
-              child: FutureBuilder(
-                future: adjacentWords,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  }
+                ),
+                const SizedBox(height: 20),
+                FutureBuilder(
+                  future: adjacentWords,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    }
 
-                  if (snapshot.hasError || snapshot.data!.isEmpty) {
-                    return Center(
-                      child: Text('Error retrieving adjacent words'),
+                    if (snapshot.hasError || snapshot.data!.isEmpty) {
+                      return Center(
+                        child: Text('Error retrieving adjacent words'),
+                      );
+                    }
+
+                    return AdjacentWords(
+                      adjacentWords: snapshot.data!,
+                      onPressed: onAdjacentPressed,
                     );
-                  }
-
-                  return AdjacentWords(
-                    adjacentWords: snapshot.data!,
-                    onPressed: onAdjacentPressed,
-                  );
-                },
-              ),
+                  },
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

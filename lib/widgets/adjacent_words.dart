@@ -14,54 +14,67 @@ class AdjacentWords extends StatelessWidget {
   Widget build(BuildContext context) {
     final previousWord = adjacentWords[0];
     final nextWord = adjacentWords[1];
-    return Table(
+    final previousHasComma = previousWord.kana.contains(',');
+    final nextHasComma = nextWord.kana.contains(',');
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        TableRow(
+        Row(
           children: [
-            Row(
-              children: [
-                Text('前の単語', textAlign: TextAlign.start),
-                Text(
-                  '(${previousWord.id.toString()})',
-                  style: Theme.of(context).textTheme.labelSmall,
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Text('次の単語', textAlign: TextAlign.start),
-                Text(
-                  '(${nextWord.id.toString()})',
-                  style: Theme.of(context).textTheme.labelSmall,
-                ),
-              ],
+            Text('前の単語', textAlign: TextAlign.start),
+            Text(
+              '(${previousWord.id.toString()})',
+              style: Theme.of(context).textTheme.labelSmall,
             ),
           ],
         ),
-        TableRow(
+        Row(
           children: [
+            const SizedBox(width: 30),
             TextButton(
               style: ButtonStyle(
-                alignment: AlignmentGeometry.bottomLeft,
+                alignment: AlignmentGeometry.topLeft,
                 padding: WidgetStatePropertyAll(
                   EdgeInsetsGeometry.only(top: 8),
                 ),
               ),
               child: Text(
-                previousWord.kana,
+                textAlign: TextAlign.start,
+                previousHasComma
+                    ? previousWord.kana.split(',')[0]
+                    : previousWord.kana,
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
               onPressed: () => onPressed(previousWord),
             ),
+          ],
+        ),
+
+        Row(
+          children: [
+            Text('次の単語', textAlign: TextAlign.start),
+            Text(
+              '(${nextWord.id.toString()})',
+              style: Theme.of(context).textTheme.labelSmall,
+            ),
+          ],
+        ),
+
+        Row(
+          children: [
+            const SizedBox(width: 30),
             TextButton(
               style: ButtonStyle(
-                alignment: AlignmentGeometry.bottomLeft,
+                alignment: AlignmentGeometry.topLeft,
                 padding: WidgetStatePropertyAll(
                   EdgeInsetsGeometry.only(top: 8),
                 ),
               ),
               child: Text(
-                nextWord.kana,
+                nextHasComma ? nextWord.kana.split(',')[0] : nextWord.kana,
+                textAlign: TextAlign.start,
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
               onPressed: () => onPressed(nextWord),
