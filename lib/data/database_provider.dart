@@ -5,8 +5,8 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:uchinaguchi_jisho/models/word_item.dart';
 
-class DatabaseProvider extends StateNotifier<List<Map<String, dynamic>>> {
-  DatabaseProvider() : super(const []);
+class DatabaseNotifier extends StateNotifier<List<Map<String, dynamic>>> {
+  DatabaseNotifier() : super(const []);
 
   static Database? _database;
 
@@ -144,6 +144,6 @@ class DatabaseProvider extends StateNotifier<List<Map<String, dynamic>>> {
 }
 
 final databaseProvider =
-    StateNotifierProvider<DatabaseProvider, List<Map<String, dynamic>>>(
-      (ref) => DatabaseProvider(),
+    StateNotifierProvider<DatabaseNotifier, List<Map<String, dynamic>>>(
+      (ref) => DatabaseNotifier(),
     );

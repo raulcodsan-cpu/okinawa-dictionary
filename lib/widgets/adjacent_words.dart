@@ -1,17 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:uchinaguchi_jisho/data/selected_word_provider.dart';
 import 'package:uchinaguchi_jisho/models/word_item.dart';
+import 'package:uchinaguchi_jisho/screens/entry_screen.dart';
 
-class AdjacentWords extends StatelessWidget {
-  const AdjacentWords({
-    super.key,
-    required this.adjacentWords,
-    required this.onPressed,
-  });
+class AdjacentWords extends ConsumerWidget {
+  const AdjacentWords({super.key, required this.adjacentWords});
   final List<WordItem> adjacentWords;
-  final Function(WordItem word) onPressed;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    void onAdjacentPressed(WordItem adjacentWord) {
+      ref.read(selectedWordProvider.notifier).select(adjacentWord);
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => EntryScreen(word: adjacentWord),
+        ),
+      );
+    }
+
     final previousWord = adjacentWords[0];
     final nextWord = adjacentWords[1];
     final previousHasComma = previousWord.kana.contains(',');
@@ -47,7 +54,7 @@ class AdjacentWords extends StatelessWidget {
                     : previousWord.kana,
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
-              onPressed: () => onPressed(previousWord),
+              onPressed: () => onAdjacentPressed(previousWord),
             ),
           ],
         ),
@@ -77,7 +84,7 @@ class AdjacentWords extends StatelessWidget {
                 textAlign: TextAlign.start,
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
-              onPressed: () => onPressed(nextWord),
+              onPressed: () => onAdjacentPressed(nextWord),
             ),
           ],
         ),

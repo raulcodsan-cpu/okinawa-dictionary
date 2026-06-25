@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uchinaguchi_jisho/data/database_provider.dart';
+import 'package:uchinaguchi_jisho/data/selected_word_provider.dart';
 import 'package:uchinaguchi_jisho/models/word_item.dart';
 import 'package:uchinaguchi_jisho/screens/entry_screen.dart';
 import 'package:uchinaguchi_jisho/widgets/search_entry.dart';
@@ -17,6 +18,7 @@ class SearchScreen extends ConsumerStatefulWidget {
 class _SearchScreenState extends ConsumerState<SearchScreen> {
   final _formKey = GlobalKey<FormState>();
   List<WordItem> _loadedQuery = [];
+  //final selectedWord = ref.watch(selectedWordProvider); -------------------------------- TODO: Take note ---------------------------------------
   Timer? _inputTimer;
   bool _isLoading = false;
 
@@ -97,13 +99,17 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 itemCount: _loadedQuery.length,
                 itemBuilder: (context, index) {
                   final word = _loadedQuery[index];
+
                   return SearchEntry(
                     word: word,
-                    onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => EntryScreen(word: word),
-                      ),
-                    ),
+                    onTap: () {
+                      ref.read(selectedWordProvider.notifier).select(word);
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => EntryScreen(word: word),
+                        ),
+                      );
+                    },
                   );
                 },
               ),

@@ -1,25 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:uchinaguchi_jisho/data/database_provider.dart';
+import 'package:uchinaguchi_jisho/data/selected_word_provider.dart';
 import 'package:uchinaguchi_jisho/models/word_item.dart';
-import 'package:uchinaguchi_jisho/widgets/adjacent_words.dart';
+import 'package:uchinaguchi_jisho/widgets/entry_widget.dart';
 
-class EntryScreen extends ConsumerWidget {
-  const EntryScreen({super.key, required this.word});
-  final WordItem word;
+class EntryScreen extends ConsumerStatefulWidget {
+  EntryScreen({super.key, required this.word});
+  //Word not required, if available pass value, if not call provider.
+  WordItem word;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    Future<List<WordItem>> adjacentWords = ref
-        .read(databaseProvider.notifier)
-        .searchAdjacent(word.id);
+  ConsumerState<ConsumerStatefulWidget> createState() {
+    return _EntryScreen();
+  }
+}
 
-    void onAdjacentPressed(WordItem adjacentWord) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => EntryScreen(word: adjacentWord),
-        ),
-      );
+class _EntryScreen extends ConsumerState<EntryScreen> {
+  final PageController pageController = PageController(initialPage: 1);
+
+  @override
+  Widget build(BuildContext context) {
+    List<EntryWidget> screenPages = [];
+    List<WordItem> adjacentWords = ref
+        .read(selectedWordProvider.notifier)
+        .adjacentWords;
+    for (var words in adjacentWords) {
+      screenPages.add(EntryWidget(word: words));
+    }
+    final previousWord = adjacentWords[0];
+    final nextWord = adjacentWords[1];
+
+    void onPageChanged(int value) {
+      if (value == 0) {
+        setState(() {
+          widget.word = previousWord;
+          ref.read(selectedWordProvider.notifier).select(previousWord);
+        });
+      } else if (value == 2) {
+        setState(() {
+          widget.word = nextWord;
+          ref.read(selectedWordProvider.notifier).select(nextWord);
+        });
+      }
     }
 
     void onHomePressed() {
@@ -32,79 +55,11 @@ class EntryScreen extends ConsumerWidget {
           IconButton(onPressed: onHomePressed, icon: Icon(Icons.clear_rounded)),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(30.0),
-        child: InteractiveViewer(
-          minScale: 0.5,
-          maxScale: 5.0,
-          child: SingleChildScrollView(
-            //----------------------- TODO: Take note ---------------------
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 10,
-              children: [
-                Center(
-                  child: Column(
-                    children: [
-                      Text(
-                        word.word,
-                        style: Theme.of(context).textTheme.titleLarge,
-                        textAlign: TextAlign.center,
-                      ),
-                      Text(
-                        '(${word.id})',
-                        style: Theme.of(context).textTheme.labelLarge,
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(width: 0.0, height: 30),
-                Text('カナ：'),
-                Row(
-                  children: [SizedBox(width: 30, height: 0.0), Text(word.kana)],
-                ),
-                Text('発音：'),
-                Row(
-                  children: [SizedBox(width: 30, height: 0.0), Text(word.ipa)],
-                ),
-                Text('説明：'),
-                Padding(
-                  padding: EdgeInsetsGeometry.symmetric(horizontal: 30),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      for (final entries in word.meanings) ...[
-                        //----------------------- TODO: Take note ---------------
-                        Text(entries),
-                        const SizedBox(height: 10),
-                      ],
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-                FutureBuilder(
-                  future: adjacentWords,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
-                    }
-
-                    if (snapshot.hasError || snapshot.data!.isEmpty) {
-                      return Center(
-                        child: Text('Error retrieving adjacent words'),
-                      );
-                    }
-
-                    return AdjacentWords(
-                      adjacentWords: snapshot.data!,
-                      onPressed: onAdjacentPressed,
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
+      body: PageView(
+        //--------------------- TODO: Take note ---------------------------------
+        controller: pageController,
+        onPageChanged: (value) => onPageChanged(value),
+        children: screenPages,
       ),
     );
   }
