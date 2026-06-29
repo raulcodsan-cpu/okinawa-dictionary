@@ -141,6 +141,39 @@ class DatabaseNotifier extends StateNotifier<List<Map<String, dynamic>>> {
 
     return loadedWords;
   }
+
+  Future<WordItem> searchFromId(int wordId) async {
+    final db = await database;
+
+    //TODO: Handle case first and last word.
+    //TODO: Comment on the function.
+
+    final result = await db.query(
+      'dictionary',
+      where: 'id IN (?)',
+      whereArgs: [wordId],
+    );
+
+    final String kana = result[0]['kana'].toString().replaceAll(
+      RegExp(r"[\[\]']"),
+      '',
+    );
+    final List<String> loadedMeanings = [];
+    for (var i = 1; i <= 3; i++) {
+      if (result[0]['meaning$i'] == null) {
+        continue;
+      }
+      loadedMeanings.add(result[0]['meaning$i'].toString());
+    }
+
+    return WordItem(
+      id: result[0]['id'] as int,
+      word: result[0]['word'] as String,
+      ipa: result[0]['ipa'] == null ? '' : result[0]['ipa'] as String,
+      kana: kana,
+      meanings: loadedMeanings,
+    );
+  }
 }
 
 final databaseProvider =
