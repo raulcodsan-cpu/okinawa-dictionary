@@ -9,13 +9,14 @@ class SelectedWordNotifier extends Notifier<WordItem?> {
   WordItem? build() => null; // Initial state: no email selected
 
   //-------------------------- TODO: Take note -------------------------
-  Future<WordItem> select(WordItem word) async {
+  void select(WordItem word) async {
     state = word;
     adjacentWords = await ref
         .read(databaseProvider.notifier)
         .searchAdjacent(state!.id);
-    return word;
   }
+
+  List<WordItem> get getAdjacent => adjacentWords;
 }
 
 final selectedWordProvider = NotifierProvider<SelectedWordNotifier, WordItem?>(

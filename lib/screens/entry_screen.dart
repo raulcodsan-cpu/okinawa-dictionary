@@ -1,6 +1,8 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uchinaguchi_jisho/data/database_provider.dart';
+import 'package:uchinaguchi_jisho/data/selected_word_provider.dart';
 import 'package:uchinaguchi_jisho/models/word_item.dart';
 import 'package:uchinaguchi_jisho/widgets/entry_widget.dart';
 
@@ -16,7 +18,6 @@ class EntryScreen extends ConsumerStatefulWidget {
 
 class _EntryScreen extends ConsumerState<EntryScreen> {
   late final PageController _pageController;
-  static const int _totalEntries = 1458; //Max db rows
   late int _currentWordId;
 
   @override
@@ -46,14 +47,15 @@ class _EntryScreen extends ConsumerState<EntryScreen> {
           IconButton(onPressed: onHomePressed, icon: Icon(Icons.clear_rounded)),
         ],
       ),
+      //----------------------------- TODO: Take note ----------------------------------
       body: PageView.builder(
+        dragStartBehavior: DragStartBehavior.start,
         controller: _pageController,
-        onPageChanged: (globalIndex) {},
         itemBuilder: (context, globalIndex) {
           //Bring back to 1-base
           final targetId = globalIndex + 1;
           //Skip processing if same word.
-          if (targetId == widget.word.id) {
+          if (targetId == _currentWordId) {
             return EntryWidget(word: widget.word);
           }
 
@@ -66,8 +68,10 @@ class _EntryScreen extends ConsumerState<EntryScreen> {
               } else if (snapshot.hasError || !snapshot.hasData) {
                 return const Center(child: Text('Error loading entry'));
               }
-
-              return EntryWidget(word: snapshot.data!);
+              return EntryWidget(
+                key: ValueKey(snapshot.data),
+                word: snapshot.data!,
+              );
             },
           );
         },

@@ -4,14 +4,28 @@ import 'package:uchinaguchi_jisho/data/selected_word_provider.dart';
 import 'package:uchinaguchi_jisho/models/word_item.dart';
 import 'package:uchinaguchi_jisho/screens/entry_screen.dart';
 
-class AdjacentWords extends ConsumerWidget {
-  const AdjacentWords({super.key, required this.adjacentWords});
-  final List<WordItem> adjacentWords;
+class AdjacentWords extends ConsumerStatefulWidget {
+  const AdjacentWords({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() {
+    return _AdjacentWords();
+  }
+}
+
+class _AdjacentWords extends ConsumerState<AdjacentWords> {
+  List<WordItem> adjacentWords = [];
+
+  @override
+  void initState() {
+    adjacentWords = ref.watch(selectedWordProvider.notifier).getAdjacent;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     void onAdjacentPressed(WordItem adjacentWord) {
-      ref.read(selectedWordProvider.notifier).select(adjacentWord);
+      ref.watch(selectedWordProvider.notifier).select(adjacentWord);
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => EntryScreen(word: adjacentWord),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:uchinaguchi_jisho/data/selected_word_provider.dart';
 import 'package:uchinaguchi_jisho/models/word_item.dart';
 import 'package:uchinaguchi_jisho/widgets/adjacent_words.dart';
 
@@ -8,12 +7,18 @@ class EntryWidget extends ConsumerWidget {
   const EntryWidget({super.key, required this.word});
   final WordItem word;
 
+  /*   @override
+  void didUpdateWidget(covariant EntryWidget oldWidget) {
+    if (oldWidget.word != widget.word) {
+      setState(() {
+        adjacentWords = ref.read(selectedWordProvider.notifier).adjacentWords;
+      });
+    }
+    super.didUpdateWidget(oldWidget);
+  } */
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    List<WordItem> adjacentWords = ref
-        .read(selectedWordProvider.notifier)
-        .adjacentWords;
-
     return Padding(
       padding: const EdgeInsets.all(30.0),
       child: InteractiveViewer(
@@ -62,7 +67,7 @@ class EntryWidget extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              AdjacentWords(adjacentWords: adjacentWords),
+              AdjacentWords(key: ValueKey(word)),
             ],
           ),
         ),

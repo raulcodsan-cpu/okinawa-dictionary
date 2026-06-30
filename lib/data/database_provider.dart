@@ -1,12 +1,18 @@
 import 'dart:io';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:uchinaguchi_jisho/data/selected_word_provider.dart';
 import 'package:uchinaguchi_jisho/models/word_item.dart';
 
 class DatabaseNotifier extends StateNotifier<List<Map<String, dynamic>>> {
-  DatabaseNotifier() : super(const []);
+  DatabaseNotifier(this._ref)
+    : super(
+        const [],
+      ); //---------------------------- TODO: Take Note --------------------------
+  final Ref _ref;
 
   static Database? _database;
 
@@ -165,18 +171,21 @@ class DatabaseNotifier extends StateNotifier<List<Map<String, dynamic>>> {
       }
       loadedMeanings.add(result[0]['meaning$i'].toString());
     }
-
-    return WordItem(
+    final WordItem loadedWord;
+    loadedWord = WordItem(
       id: result[0]['id'] as int,
       word: result[0]['word'] as String,
       ipa: result[0]['ipa'] == null ? '' : result[0]['ipa'] as String,
       kana: kana,
       meanings: loadedMeanings,
     );
+
+    _ref.read(selectedWordProvider.notifier).select(loadedWord);
+    return loadedWord;
   }
 }
 
 final databaseProvider =
     StateNotifierProvider<DatabaseNotifier, List<Map<String, dynamic>>>(
-      (ref) => DatabaseNotifier(),
+      (ref) => DatabaseNotifier(ref),
     );
