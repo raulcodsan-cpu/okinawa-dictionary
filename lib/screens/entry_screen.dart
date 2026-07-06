@@ -18,14 +18,18 @@ class EntryScreen extends ConsumerStatefulWidget {
 
 class _EntryScreen extends ConsumerState<EntryScreen> {
   late final PageController _pageController;
-  late int _currentWordId;
+  bool isFavourite = false;
+
+  void onAdjacentPressed(int id) {
+    _pageController.jumpToPage(id - 1);
+  }
 
   @override
   void initState() {
-    _currentWordId = widget.word.id;
     //Convert ti 0-based
     final int clickedIndex = widget.word.id - 1;
     _pageController = PageController(initialPage: clickedIndex);
+    isFavourite = ref.read(selectedWordProvider.notifier).isFavourite;
     super.initState();
   }
 
@@ -43,23 +47,38 @@ class _EntryScreen extends ConsumerState<EntryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         actions: [
+          IconButton(
+            onPressed: () {
+              if (isFavourite) {
+                setState(() {
+                  ref.read(databaseProvider.notifier).removeFavWord();
+                  isFavourite = false;
+                });
+              } else {
+                setState(() {
+                  ref.read(databaseProvider.notifier).addFavouriteWord();
+                  isFavourite = true;
+                });
+              }
+            },
+            icon: isFavourite
+                ? Icon(Icons.bookmark_added_sharp)
+                : Icon(Icons.bookmark_outline_sharp),
+          ),
+          IconButton(onPressed: () {}, icon: Icon(Icons.share)),
           IconButton(onPressed: onHomePressed, icon: Icon(Icons.clear_rounded)),
         ],
       ),
-      //----------------------------- TODO: Take note ----------------------------------
       body: PageView.builder(
         dragStartBehavior: DragStartBehavior.start,
         controller: _pageController,
         itemBuilder: (context, globalIndex) {
           //Bring back to 1-base
           final targetId = globalIndex + 1;
-          //Skip processing if same word.
-          if (targetId == _currentWordId) {
-            return EntryWidget(word: widget.word);
-          }
 
-          //Otherwise get next/previous from db
+          //Get next/previous from db
           return FutureBuilder<WordItem>(
             future: ref.watch(databaseProvider.notifier).searchFromId(targetId),
             builder: (context, snapshot) {
@@ -71,6 +90,7 @@ class _EntryScreen extends ConsumerState<EntryScreen> {
               return EntryWidget(
                 key: ValueKey(snapshot.data),
                 word: snapshot.data!,
+                onAdjacentPressed: onAdjacentPressed,
               );
             },
           );

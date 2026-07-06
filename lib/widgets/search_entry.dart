@@ -12,6 +12,8 @@ class SearchEntry extends StatefulWidget {
 }
 
 class _SearchEntryState extends State<SearchEntry> {
+  final bodyFontGroup = AutoSizeGroup();
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -49,10 +51,13 @@ class _SearchEntryState extends State<SearchEntry> {
             Container(
               alignment: AlignmentGeometry.centerLeft,
               height: 50,
-              width: 200,
-              child: Text(
+              width: 300,
+              child: AutoSizeText(
+                maxLines: 2,
                 widget.word.meanings[0],
-                style: TextStyle(fontSize: 15, fontStyle: FontStyle.italic),
+                style: TextStyle(fontSize: 18, fontStyle: FontStyle.italic),
+                group: bodyFontGroup,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
             SizedBox(width: 0.0, height: 5),

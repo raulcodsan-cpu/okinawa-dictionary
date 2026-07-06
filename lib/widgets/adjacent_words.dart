@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uchinaguchi_jisho/data/selected_word_provider.dart';
 import 'package:uchinaguchi_jisho/models/word_item.dart';
-import 'package:uchinaguchi_jisho/screens/entry_screen.dart';
 
 class AdjacentWords extends ConsumerStatefulWidget {
-  const AdjacentWords({super.key});
+  const AdjacentWords({super.key, required this.onAdjacentPressed});
+  final Function onAdjacentPressed;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() {
@@ -24,14 +24,14 @@ class _AdjacentWords extends ConsumerState<AdjacentWords> {
 
   @override
   Widget build(BuildContext context) {
-    void onAdjacentPressed(WordItem adjacentWord) {
+    /* void onAdjacentPressed(WordItem adjacentWord) {
       ref.watch(selectedWordProvider.notifier).select(adjacentWord);
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => EntryScreen(word: adjacentWord),
         ),
       );
-    }
+    } */
 
     final previousWord = adjacentWords[0];
     final nextWord = adjacentWords[1];
@@ -68,7 +68,7 @@ class _AdjacentWords extends ConsumerState<AdjacentWords> {
                     : previousWord.kana,
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
-              onPressed: () => onAdjacentPressed(previousWord),
+              onPressed: () => widget.onAdjacentPressed(previousWord.id),
             ),
           ],
         ),
@@ -98,7 +98,7 @@ class _AdjacentWords extends ConsumerState<AdjacentWords> {
                 textAlign: TextAlign.start,
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
-              onPressed: () => onAdjacentPressed(nextWord),
+              onPressed: () => widget.onAdjacentPressed(nextWord.id),
             ),
           ],
         ),

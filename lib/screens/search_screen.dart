@@ -6,6 +6,7 @@ import 'package:uchinaguchi_jisho/data/database_provider.dart';
 import 'package:uchinaguchi_jisho/data/selected_word_provider.dart';
 import 'package:uchinaguchi_jisho/models/word_item.dart';
 import 'package:uchinaguchi_jisho/screens/entry_screen.dart';
+import 'package:uchinaguchi_jisho/screens/favourites_screen.dart';
 import 'package:uchinaguchi_jisho/widgets/search_entry.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
@@ -60,6 +61,22 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         title: Text(
           '沖縄語辞典',
           style: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 30),
+        ),
+      ),
+      drawer: Drawer(
+        child: Column(
+          children: [
+            ListTile(
+              leading: Icon(Icons.bookmark_outlined),
+              title: Text('保存リスト'),
+              onTap: () => Navigator.of(context).push(
+                DialogRoute(
+                  context: context,
+                  builder: (context) => FavouritesScreen(),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
       body: Padding(

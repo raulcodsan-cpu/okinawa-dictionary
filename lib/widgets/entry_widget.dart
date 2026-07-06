@@ -4,18 +4,13 @@ import 'package:uchinaguchi_jisho/models/word_item.dart';
 import 'package:uchinaguchi_jisho/widgets/adjacent_words.dart';
 
 class EntryWidget extends ConsumerWidget {
-  const EntryWidget({super.key, required this.word});
+  const EntryWidget({
+    super.key,
+    required this.word,
+    required this.onAdjacentPressed,
+  });
   final WordItem word;
-
-  /*   @override
-  void didUpdateWidget(covariant EntryWidget oldWidget) {
-    if (oldWidget.word != widget.word) {
-      setState(() {
-        adjacentWords = ref.read(selectedWordProvider.notifier).adjacentWords;
-      });
-    }
-    super.didUpdateWidget(oldWidget);
-  } */
+  final Function onAdjacentPressed;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -67,7 +62,10 @@ class EntryWidget extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              AdjacentWords(key: ValueKey(word)),
+              AdjacentWords(
+                key: ValueKey(word),
+                onAdjacentPressed: onAdjacentPressed,
+              ),
             ],
           ),
         ),
