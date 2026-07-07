@@ -66,15 +66,30 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       drawer: Drawer(
         child: Column(
           children: [
+            DrawerHeader(
+              padding: EdgeInsetsGeometry.fromLTRB(10, 10, 10, 0),
+              child: Center(
+                child: Text(
+                  'メニュー',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge!.copyWith(fontSize: 25),
+                ),
+              ),
+            ),
             ListTile(
               leading: Icon(Icons.bookmark_outlined),
               title: Text('保存リスト'),
-              onTap: () => Navigator.of(context).push(
-                DialogRoute(
-                  context: context,
-                  builder: (context) => FavouritesScreen(),
-                ),
-              ),
+              onTap: () {
+                //----------------------- TODO: Take note of pop b4 push -------------------------
+                Navigator.pop(context);
+                Navigator.of(context).push(
+                  DialogRoute(
+                    context: context,
+                    builder: (context) => FavouritesScreen(),
+                  ),
+                );
+              },
             ),
           ],
         ),

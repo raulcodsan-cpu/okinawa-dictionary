@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uchinaguchi_jisho/data/database_provider.dart';
+import 'package:uchinaguchi_jisho/data/selected_word_provider.dart';
+import 'package:uchinaguchi_jisho/screens/entry_screen.dart';
+import 'package:uchinaguchi_jisho/widgets/search_entry.dart';
 
 class FavouritesScreen extends ConsumerWidget {
   const FavouritesScreen({super.key});
@@ -21,8 +24,23 @@ class FavouritesScreen extends ConsumerWidget {
             }
             return ListView.builder(
               itemCount: snapshot.data!.length,
-              itemBuilder: (context, index) =>
-                  ListTile(title: Text(snapshot.data![index].word)),
+              itemBuilder: (context, index) => SearchEntry(
+                word: snapshot.data![index],
+                onTap: () async {
+                  ref
+                      .read(selectedWordProvider.notifier)
+                      .select(snapshot.data![index]);
+                  await Navigator.of(context).push(
+                    DialogRoute(
+                      context: context,
+                      builder: (context) =>
+                          EntryScreen(word: snapshot.data![index]),
+                    ),
+                  );
+                  // --------------------- TODO: Take note -----------------------------
+                  ref.invalidate(databaseProvider);
+                },
+              ),
             );
           },
         ),

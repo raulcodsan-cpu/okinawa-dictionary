@@ -224,7 +224,6 @@ class DatabaseNotifier extends StateNotifier<List<Map<String, dynamic>>> {
 
   //Func. for bookmark icon change.
   Future<bool> isFavourite(WordItem word) async {
-    print('isFavourite called.');
     final db = await database;
 
     await db.execute('''
@@ -236,9 +235,8 @@ class DatabaseNotifier extends StateNotifier<List<Map<String, dynamic>>> {
 
     final result = await db.rawQuery(
       'SELECT 1 FROM favourites WHERE word_id = ? LIMIT 1',
-      [word!.id],
+      [word.id],
     );
-    print(result);
 
     return result.isNotEmpty;
   }

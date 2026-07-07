@@ -40,7 +40,7 @@ class _EntryScreen extends ConsumerState<EntryScreen> {
   }
 
   void onHomePressed() {
-    Navigator.of(context).popUntil(ModalRoute.withName('SearchScreen'));
+    Navigator.of(context).pop();
   }
 
   @override
