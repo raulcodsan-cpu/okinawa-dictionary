@@ -14,7 +14,7 @@ migrate_working_dir/
 /windows/
 /macos/
 /linux/
-/android/
+#/android/ un-ignored for Firebase Deployment
 /web/
 /ios/
 /linux/
