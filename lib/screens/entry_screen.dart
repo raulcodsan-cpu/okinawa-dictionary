@@ -2,7 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uchinaguchi_jisho/data/database_provider.dart';
-import 'package:uchinaguchi_jisho/data/selected_word_provider.dart';
+import 'package:uchinaguchi_jisho/data/fav_provider.dart';
 import 'package:uchinaguchi_jisho/models/word_item.dart';
 import 'package:uchinaguchi_jisho/widgets/entry_widget.dart';
 
@@ -29,8 +29,19 @@ class _EntryScreen extends ConsumerState<EntryScreen> {
     //Convert ti 0-based
     final int clickedIndex = widget.word.id - 1;
     _pageController = PageController(initialPage: clickedIndex);
-    isFavourite = ref.read(selectedWordProvider.notifier).isFavourite;
+    updateFav();
+
+    // ------------------------------------ TODO: Take note ----------------------------
     super.initState();
+  }
+
+  void updateFav() async {
+    final favourite = await ref.read(favouritesProvider.notifier).isFavourite();
+    if (mounted) {
+      setState(() {
+        isFavourite = favourite;
+      });
+    }
   }
 
   @override
@@ -53,12 +64,12 @@ class _EntryScreen extends ConsumerState<EntryScreen> {
             onPressed: () {
               if (isFavourite) {
                 setState(() {
-                  ref.read(databaseProvider.notifier).removeFavWord();
+                  ref.watch(favouritesProvider.notifier).removeFavWord();
                   isFavourite = false;
                 });
               } else {
                 setState(() {
-                  ref.read(databaseProvider.notifier).addFavouriteWord();
+                  ref.read(favouritesProvider.notifier).addFavouriteWord();
                   isFavourite = true;
                 });
               }
@@ -72,6 +83,7 @@ class _EntryScreen extends ConsumerState<EntryScreen> {
         ],
       ),
       body: PageView.builder(
+        onPageChanged: (value) => updateFav(),
         dragStartBehavior: DragStartBehavior.start,
         controller: _pageController,
         itemBuilder: (context, globalIndex) {
@@ -87,6 +99,7 @@ class _EntryScreen extends ConsumerState<EntryScreen> {
               } else if (snapshot.hasError || !snapshot.hasData) {
                 return const Center(child: Text('Error loading entry'));
               }
+
               return EntryWidget(
                 key: ValueKey(snapshot.data),
                 word: snapshot.data!,

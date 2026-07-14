@@ -180,6 +180,7 @@ class DatabaseNotifier extends StateNotifier<List<Map<String, dynamic>>> {
     return loadedWord;
   }
 
+  /* 
   void addFavouriteWord() async {
     final db = await database;
     final word = _ref.read(selectedWordProvider);
@@ -269,7 +270,7 @@ class DatabaseNotifier extends StateNotifier<List<Map<String, dynamic>>> {
         meanings: loadedMeanings,
       );
     }));
-  }
+  } */
 }
 
 final databaseProvider =

@@ -1,0 +1,46 @@
+version: 2.1
+
+jobs:
+  build_and_deploy:
+    # A pre-configured Docker image forFlutter 
+    docker:
+      - image: ghcr.io/cirruslabs/flutter:latest
+    
+    steps:
+      - checkout
+
+      - run:
+          name: "Fetch Flutter Dependencies"
+          command: flutter pub get
+
+      - run:
+          name: "Build Android APK"
+          command: flutter build apk --release
+
+      - run:
+          name: "Install Firebase CLI"
+          # Download standalone Firebase bin
+          command: curl -sL https://firebase.tools | bash
+
+      - run:
+          name: "Authenticate & Deploy to Firebase"
+          command: |
+            # 1. Write the securely stored JSON variable into a temporary file
+            echo $GOOGLE_CREDENTIALS > google-credentials.json
+            
+            # 2. Tell Google's libraries where to find the auth file
+            export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/google-credentials.json
+            
+            # 3. Deploy the compiled artifact
+            firebase appdistribution:distribute build/app/outputs/flutter-apk/app-release.apk \
+              --app $FIREBASE_APP_ID \
+              --release-notes "Automated build triggered via CircleCI." \
+              --groups "qa-testers" 
+
+workflows:
+  deploy_workflow:
+    jobs:
+      - build_and_deploy:
+          filters:
+            branches:
+              only: main # This ensures deployment only happens when merging to the main branch
