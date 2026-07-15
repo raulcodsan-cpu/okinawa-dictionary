@@ -1,17 +1,23 @@
 import 'dart:io';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:uchinaguchi_jisho/data/selected_word_provider.dart';
+import 'package:uchinaguchi_jisho/models/word_item.dart';
 
-class DatabaseProvider extends StateNotifier<List<Map<String, dynamic>>> {
-  DatabaseProvider() : super(const []);
+class DatabaseNotifier extends StateNotifier<List<Map<String, dynamic>>> {
+  DatabaseNotifier(this._ref) : super(const []);
+  final Ref _ref;
 
   static Database? _database;
 
   Future<Database> get database async {
-    if (_database != null) return _database!;
-    _database = await _initPrepopulatedDB('okinawan_dictionary.db');
+    if (_database != null) {
+      return _database!;
+    }
+    _database = await _initPrepopulatedDB('okinawa_pandas.db');
     return _database!;
   }
 
@@ -24,7 +30,7 @@ class DatabaseProvider extends StateNotifier<List<Map<String, dynamic>>> {
 
     if (!exists) {
       // If it doesn't exist, copy it from the assets folder
-      print("Creating a copy of the pre-populated database from assets...");
+      //rint('Creating a copy of the pre-populated database from assets...');
 
       try {
         // Ensure the parent directory exists
@@ -39,12 +45,12 @@ class DatabaseProvider extends StateNotifier<List<Map<String, dynamic>>> {
 
         // Write the byte data into the local storage file system
         await File(path).writeAsBytes(bytes, flush: true);
-        print("Database successfully copied.");
+        //rint('Database successfully copied.');
       } catch (e) {
-        print("Error copying database from assets: $e");
+        //rint('Error copying database from assets: $e');
       }
     } else {
-      print("Database already exists on device. Opening existing database...");
+      //rint('Database already exists on device. Opening existing database...');
     }
 
     // Open the newly copied database
@@ -52,17 +58,130 @@ class DatabaseProvider extends StateNotifier<List<Map<String, dynamic>>> {
   }
 
   // Search
-  Future<List<Map<String, dynamic>>> searchWords(String query) async {
+  Future<List<WordItem>> searchWords(String query) async {
     final db = await database;
-    return await db.query(
-      'dictionary',
-      where: 'okinawan LIKE ? OR japanese LIKE ? OR tags LIKE ?',
-      whereArgs: ['%$query%', '%$query%', '%$query%'],
+
+    /*     ---- SQL table debug code ---- 
+    final tables = await db.rawQuery(
+      "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'",
     );
+      for (var table in tables) {
+      rint(table['name']);
+    } */
+
+    final loadedItems = await (db.query(
+      'dictionary',
+      where: 'word LIKE ? OR kana LIKE ? OR meaning1 LIKE ?',
+      whereArgs: ['%$query%', '%$query%', '%$query%'],
+    ));
+
+    final List<WordItem> loadedWords = [];
+    for (var element in loadedItems) {
+      final List<String> loadedMeanings = [];
+      final kana = element['kana'].toString().replaceAll(
+        RegExp(r"[\[\]']"),
+        '',
+      );
+      //Convert meanings to a List to use later for ListBuilder.
+      for (var i = 1; i <= 3; i++) {
+        if (element['meaning$i'] == null) {
+          continue;
+        }
+        loadedMeanings.add(element['meaning$i'].toString());
+      }
+
+      loadedWords.add(
+        WordItem(
+          id: element['id'] as int,
+          word: element['word'] as String,
+          ipa: element['ipa'] == null ? '' : element['ipa'] as String,
+          kana: kana,
+          meanings: loadedMeanings,
+        ),
+      );
+    }
+    return loadedWords;
+  }
+
+  //Search adjacent words (for entry_screen)
+  Future<List<WordItem>> searchAdjacent(int wordId) async {
+    final db = await database;
+
+    //TODO: Handle case first and last word.
+    //TODO: Comment on the function.
+
+    final result = await db.query(
+      'dictionary',
+      where: 'id IN (?, ?)',
+      whereArgs: [wordId + 1, wordId - 1],
+    );
+
+    final List<WordItem> loadedWords = [];
+    for (var element in result) {
+      final List<String> loadedMeanings = [];
+      final kana = element['kana'].toString().replaceAll(
+        RegExp(r"[\[\]']"),
+        '',
+      );
+      //Convert meanings to a List to use later for ListBuilder.
+      for (var i = 1; i <= 3; i++) {
+        if (element['meaning$i'] == null) {
+          continue;
+        }
+        loadedMeanings.add(element['meaning$i'].toString());
+      }
+
+      loadedWords.add(
+        WordItem(
+          id: element['id'] as int,
+          word: element['word'] as String,
+          ipa: element['ipa'] == null ? '' : element['ipa'] as String,
+          kana: kana,
+          meanings: loadedMeanings,
+        ),
+      );
+    }
+
+    return loadedWords;
+  }
+
+  Future<WordItem> searchFromId(int wordId) async {
+    final db = await database;
+
+    //TODO: Handle case first and last word.
+
+    final result = await db.query(
+      'dictionary',
+      where: 'id IN (?)',
+      whereArgs: [wordId],
+    );
+
+    final String kana = result[0]['kana'].toString().replaceAll(
+      RegExp(r"[\[\]']"),
+      '',
+    );
+    final List<String> loadedMeanings = [];
+    for (var i = 1; i <= 3; i++) {
+      if (result[0]['meaning$i'] == null) {
+        continue;
+      }
+      loadedMeanings.add(result[0]['meaning$i'].toString());
+    }
+    final WordItem loadedWord;
+    loadedWord = WordItem(
+      id: result[0]['id'] as int,
+      word: result[0]['word'] as String,
+      ipa: result[0]['ipa'] == null ? '' : result[0]['ipa'] as String,
+      kana: kana,
+      meanings: loadedMeanings,
+    );
+
+    _ref.read(selectedWordProvider.notifier).select(loadedWord);
+    return loadedWord;
   }
 }
 
 final databaseProvider =
-    StateNotifierProvider<DatabaseProvider, List<Map<String, dynamic>>>(
-      (ref) => DatabaseProvider(),
+    StateNotifierProvider<DatabaseNotifier, List<Map<String, dynamic>>>(
+      (ref) => DatabaseNotifier(ref),
     );

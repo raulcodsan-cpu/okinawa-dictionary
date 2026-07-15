@@ -3,6 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uchinaguchi_jisho/data/database_provider.dart';
+import 'package:uchinaguchi_jisho/data/selected_word_provider.dart';
+import 'package:uchinaguchi_jisho/models/word_item.dart';
+import 'package:uchinaguchi_jisho/screens/entry_screen.dart';
+import 'package:uchinaguchi_jisho/screens/favourites_screen.dart';
+import 'package:uchinaguchi_jisho/widgets/search_entry.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
@@ -13,12 +18,13 @@ class SearchScreen extends ConsumerStatefulWidget {
 
 class _SearchScreenState extends ConsumerState<SearchScreen> {
   final _formKey = GlobalKey<FormState>();
-  List<Map<String, dynamic>> _loadedQuery = [];
+  List<WordItem> _loadedQuery = [];
+  //final selectedWord = ref.watch(selectedWordProvider); -------------------------------- TODO: Take note ---------------------------------------
   Timer? _inputTimer;
   bool _isLoading = false;
 
   void _onInputChange(String query) {
-    List<Map<String, dynamic>> results = [];
+    List<WordItem> results = [];
     //Check if the timer is active, if is cancel because a new input has been made
     //When using null check operator ??, you can conditionally access the variable with ? (as opposed to !)
     if (_inputTimer?.isActive ?? false) {
@@ -34,7 +40,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       return;
     }
 
-    _inputTimer = Timer(const Duration(milliseconds: 300), () async {
+    _inputTimer = Timer(const Duration(milliseconds: 500), () async {
       setState(() {
         _isLoading = true;
       });
@@ -51,7 +57,43 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('標準語⇔しまくとぅば')),
+      appBar: AppBar(
+        title: Text(
+          '沖縄語辞典',
+          style: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 30),
+        ),
+      ),
+      drawer: Drawer(
+        child: Column(
+          children: [
+            DrawerHeader(
+              padding: EdgeInsetsGeometry.fromLTRB(10, 10, 10, 0),
+              child: Center(
+                child: Text(
+                  'メニュー',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge!.copyWith(fontSize: 25),
+                ),
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.bookmark_outlined),
+              title: Text('保存リスト'),
+              onTap: () {
+                //----------------------- TODO: Take note of pop b4 push -------------------------
+                Navigator.pop(context);
+                Navigator.of(context).push(
+                  DialogRoute(
+                    context: context,
+                    builder: (context) => FavouritesScreen(),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -81,14 +123,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   focusColor: Colors.white,
                 ),
                 onChanged: _onInputChange,
-                /* (value) async {
-                  final result = await ref
-                      .read(databaseProvider.notifier)
-                      .searchWords(value);
-                  setState(() {
-                    _loadedQuery = result;
-                  });
-                } */
               ),
             ),
             SizedBox(height: 20),
@@ -97,9 +131,17 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 itemCount: _loadedQuery.length,
                 itemBuilder: (context, index) {
                   final word = _loadedQuery[index];
-                  return ListTile(
-                    title: Text(word['okinawan'] ?? ''),
-                    subtitle: Text(word['japanese'] ?? ''),
+
+                  return SearchEntry(
+                    word: word,
+                    onTap: () {
+                      ref.read(selectedWordProvider.notifier).select(word);
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => EntryScreen(word: word),
+                        ),
+                      );
+                    },
                   );
                 },
               ),

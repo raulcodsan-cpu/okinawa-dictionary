@@ -8,6 +8,40 @@ final theme = ThemeData(
     brightness: Brightness.dark,
     seedColor: const Color.fromARGB(255, 4, 42, 73),
   ),
+  textTheme: TextTheme(
+    //titleLarge for EntryScreen's main word.
+    titleLarge: TextStyle(
+      fontSize: 40,
+      color: Colors.white,
+      decoration: TextDecoration.none,
+      fontWeight: FontWeight.normal,
+    ),
+    //titeMedium for SearchScreen's word list's words title.
+    titleMedium: TextStyle(
+      fontSize: 20,
+      color: Colors.white,
+      decoration: TextDecoration.none,
+      fontWeight: FontWeight.normal,
+      overflow: TextOverflow.ellipsis,
+    ),
+    //labelSmall for EntryScreen adjacent word id.
+    labelSmall: TextStyle(
+      fontSize: 15,
+      color: Colors.white54,
+      overflow: TextOverflow.ellipsis,
+    ),
+    //labelLarge for EntryScreen main word id.
+    labelLarge: TextStyle(
+      fontSize: 20,
+      color: const Color.fromARGB(96, 255, 255, 255),
+    ),
+    //headlineMedium for adjacent words link (word).
+    headlineMedium: TextStyle(
+      color: Colors.blue.shade200,
+      fontWeight: FontWeight.bold,
+      fontSize: 17,
+    ),
+  ),
 );
 
 void main() {
@@ -19,6 +53,10 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(theme: theme, home: SearchScreen());
+    return MaterialApp(
+      theme: theme,
+      initialRoute: 'SearchScreen',
+      routes: {'SearchScreen': (context) => SearchScreen()},
+    );
   }
 }
