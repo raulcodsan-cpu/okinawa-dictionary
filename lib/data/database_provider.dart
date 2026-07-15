@@ -30,7 +30,7 @@ class DatabaseNotifier extends StateNotifier<List<Map<String, dynamic>>> {
 
     if (!exists) {
       // If it doesn't exist, copy it from the assets folder
-      print('Creating a copy of the pre-populated database from assets...');
+      //rint('Creating a copy of the pre-populated database from assets...');
 
       try {
         // Ensure the parent directory exists
@@ -45,12 +45,12 @@ class DatabaseNotifier extends StateNotifier<List<Map<String, dynamic>>> {
 
         // Write the byte data into the local storage file system
         await File(path).writeAsBytes(bytes, flush: true);
-        print('Database successfully copied.');
+        //rint('Database successfully copied.');
       } catch (e) {
-        print('Error copying database from assets: $e');
+        //rint('Error copying database from assets: $e');
       }
     } else {
-      print('Database already exists on device. Opening existing database...');
+      //rint('Database already exists on device. Opening existing database...');
     }
 
     // Open the newly copied database
@@ -66,7 +66,7 @@ class DatabaseNotifier extends StateNotifier<List<Map<String, dynamic>>> {
       "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'",
     );
       for (var table in tables) {
-      print(table['name']);
+      rint(table['name']);
     } */
 
     final loadedItems = await (db.query(
@@ -179,98 +179,6 @@ class DatabaseNotifier extends StateNotifier<List<Map<String, dynamic>>> {
     _ref.read(selectedWordProvider.notifier).select(loadedWord);
     return loadedWord;
   }
-
-  /* 
-  void addFavouriteWord() async {
-    final db = await database;
-    final word = _ref.read(selectedWordProvider);
-
-    await db.execute('''
-        CREATE TABLE IF NOT EXISTS favourites (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          word_id INTEGER UNIQUE
-        )
-      ''');
-
-    try {
-      db.execute('INSERT OR IGNORE INTO favourites (word_id) VALUES (?)', [
-        word!.id,
-      ]);
-    } catch (e) {
-      print('Error while adding word: $e');
-      return;
-    }
-    print('Word added correctly');
-  }
-
-  void removeFavWord() async {
-    final db = await database;
-    final word = _ref.read(selectedWordProvider);
-
-    await db.execute('''
-        CREATE TABLE IF NOT EXISTS favourites (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          word_id INTEGER UNIQUE
-        )
-      ''');
-
-    try {
-      //---------------- TODO: Take note (execute word.id arg) ----------------------
-      db.execute('DELETE FROM favourites WHERE word_id = ?', [word!.id]);
-    } catch (e) {
-      print('Error while deleting word: $e');
-    }
-    print('Word deleted correctly');
-  }
-
-  //Func. for bookmark icon change.
-  Future<bool> isFavourite(WordItem word) async {
-    final db = await database;
-
-    await db.execute('''
-        CREATE TABLE IF NOT EXISTS favourites (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          word_id INTEGER UNIQUE
-        )
-      ''');
-
-    final result = await db.rawQuery(
-      'SELECT 1 FROM favourites WHERE word_id = ? LIMIT 1',
-      [word.id],
-    );
-
-    return result.isNotEmpty;
-  }
-
-  Future<List<WordItem>> getFavouriteWords() async {
-    final db = await database;
-    final results = await db.rawQuery('''
-      SELECT dictionary.* FROM favourites
-      INNER JOIN dictionary ON favourites.word_id = dictionary.id
-      ORDER BY favourites.id DESC
-      ''');
-    //---------------------- TODO: Take note -----------------------------------------
-    return List.generate(results.length, ((index) {
-      final List<String> loadedMeanings = [];
-      for (var i = 1; i <= 3; i++) {
-        if (results[index]['meaning$i'] == null) {
-          continue;
-        }
-        loadedMeanings.add(results[index]['meaning$i'].toString());
-      }
-      final String kana = results[index]['kana'].toString().replaceAll(
-        RegExp(r"[\[\]']"),
-        '',
-      );
-      return WordItem(
-        id: results[index]['id'] as int,
-        word: results[index]['word'] as String,
-        ipa: results[index]['ipa'] as String,
-        kana: kana,
-        meanings: loadedMeanings,
-      );
-    }));
-  } */
 }
 
 final databaseProvider =

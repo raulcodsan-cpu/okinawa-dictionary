@@ -18,7 +18,7 @@ Future<Database> get database async {
 
   if (!exists) {
     // If it doesn't exist, copy it from the assets folder
-    print('Creating a copy of the pre-populated database from assets...');
+    // ('Creating a copy of the pre-populated database from assets...');
 
     try {
       // Ensure the parent directory exists
@@ -33,12 +33,12 @@ Future<Database> get database async {
 
       // Write the byte data into the local storage file system
       await File(path).writeAsBytes(bytes, flush: true);
-      print('Database successfully copied.');
+      // ('Database successfully copied.');
     } catch (e) {
-      print('Error copying database from assets: $e');
+      // ('Error copying database from assets: $e');
     }
   } else {
-    print('Database already exists on device. Opening existing database...');
+    // ('Database already exists on device. Opening existing database...');
   }
 
   // Open the newly copied database
@@ -146,9 +146,9 @@ class FavouritesNotifier extends _$FavouritesNotifier {
     try {
       await db.execute('DELETE FROM favourites WHERE word_id = ?', [word.id]);
     } catch (e) {
-      print('Error while deleting word: $e');
+      // ('Error while deleting word: $e');
     }
-    print('Word deleted correctly');
+    // ('Word deleted correctly');
   }
 
   Future<void> addFavouriteWord() async {
@@ -176,9 +176,9 @@ class FavouritesNotifier extends _$FavouritesNotifier {
         [word.id],
       );
     } catch (e) {
-      print('Error while adding word: $e');
+      //('Error while adding word: $e');
       return;
     }
-    print('Word added correctly');
+    //('Word added correctly');
   }
 }
