@@ -1,4 +1,4 @@
-package com.example.uchinaguchi_jisho
+package com.mixefy.okinawa_gojiten
 
 import io.flutter.embedding.android.FlutterActivity
 
