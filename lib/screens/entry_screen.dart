@@ -83,7 +83,11 @@ class _EntryScreen extends ConsumerState<EntryScreen> {
         ],
       ),
       body: PageView.builder(
-        onPageChanged: (value) => updateFav(),
+        onPageChanged: (value) {
+          setState(() {
+            updateFav();
+          });
+        },
         dragStartBehavior: DragStartBehavior.start,
         controller: _pageController,
         itemBuilder: (context, globalIndex) {

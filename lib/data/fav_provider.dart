@@ -51,6 +51,13 @@ class FavouritesNotifier extends _$FavouritesNotifier {
   Future<List<WordItem>> build() async {
     final db = await database;
 
+    await db.execute('''
+        CREATE TABLE IF NOT EXISTS favourites (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          word_id INTEGER UNIQUE
+        )
+      ''');
+
     final List<Map<String, dynamic>> results = await db.rawQuery('''
       SELECT dictionary.* FROM favourites
       INNER JOIN dictionary ON favourites.word_id = dictionary.id
