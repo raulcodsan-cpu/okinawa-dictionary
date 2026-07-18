@@ -6,12 +6,18 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:uchinaguchi_jisho/data/selected_word_provider.dart';
 import 'package:uchinaguchi_jisho/models/word_item.dart';
+import 'package:flutter/foundation.dart';
 
 class DatabaseNotifier extends StateNotifier<List<Map<String, dynamic>>> {
   DatabaseNotifier(this._ref) : super(const []);
   final Ref _ref;
 
   static Database? _database;
+
+  @visibleForTesting
+  static set mockDatabase(Database? mockDb) {
+    _database = mockDb;
+  }
 
   Future<Database> get database async {
     if (_database != null) {
