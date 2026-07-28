@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:uchinaguchi_jisho/data/selected_word_provider.dart';
 import 'package:uchinaguchi_jisho/models/word_item.dart';
-import 'package:uchinaguchi_jisho/widgets/adjacent_words.dart';
+import 'package:uchinaguchi_jisho/widgets/adjacent_words_ready.dart';
+import 'package:uchinaguchi_jisho/widgets/adjacent_words_waiting.dart';
 
 class EntryWidget extends ConsumerWidget {
-  const EntryWidget({
-    super.key,
-    required this.word,
-    required this.onAdjacentPressed,
-  });
+  const EntryWidget({super.key, required this.word});
   final WordItem word;
-  final Function onAdjacentPressed;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -62,9 +59,18 @@ class EntryWidget extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              AdjacentWords(
-                key: ValueKey(word),
-                onAdjacentPressed: onAdjacentPressed,
+              FutureBuilder(
+                future: ref.watch(selectedWordProvider.notifier).getAdjacent,
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Error retrieveing adjacent words');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return AdjacentWordsWaiting();
+                  }
+
+                  return AdjacentWords(adjacentWords: snapshot.data!);
+                },
               ),
             ],
           ),

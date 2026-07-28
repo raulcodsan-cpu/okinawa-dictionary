@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:uchinaguchi_jisho/data/selected_word_provider.dart';
 import 'package:uchinaguchi_jisho/models/word_item.dart';
+import 'package:uchinaguchi_jisho/screens/entry_screen.dart';
 
 class AdjacentWords extends ConsumerStatefulWidget {
-  const AdjacentWords({super.key, required this.onAdjacentPressed});
-  final Function onAdjacentPressed;
+  const AdjacentWords({super.key, required this.adjacentWords});
+  final List<WordItem> adjacentWords;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() {
@@ -14,14 +14,6 @@ class AdjacentWords extends ConsumerStatefulWidget {
 }
 
 class _AdjacentWords extends ConsumerState<AdjacentWords> {
-  List<WordItem> adjacentWords = [];
-
-  @override
-  void initState() {
-    adjacentWords = ref.watch(selectedWordProvider.notifier).getAdjacent;
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     /* void onAdjacentPressed(WordItem adjacentWord) {
@@ -32,9 +24,8 @@ class _AdjacentWords extends ConsumerState<AdjacentWords> {
         ),
       );
     } */
-
-    final previousWord = adjacentWords[0];
-    final nextWord = adjacentWords[1];
+    final previousWord = widget.adjacentWords[0];
+    final nextWord = widget.adjacentWords[1];
     final previousHasComma = previousWord.kana.contains(',');
     final nextHasComma = nextWord.kana.contains(',');
 
@@ -68,7 +59,13 @@ class _AdjacentWords extends ConsumerState<AdjacentWords> {
                     : previousWord.kana,
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
-              onPressed: () => widget.onAdjacentPressed(previousWord.id),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => EntryScreen(word: previousWord),
+                  ),
+                );
+              },
             ),
           ],
         ),
@@ -98,7 +95,13 @@ class _AdjacentWords extends ConsumerState<AdjacentWords> {
                 textAlign: TextAlign.start,
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
-              onPressed: () => widget.onAdjacentPressed(nextWord.id),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => EntryScreen(word: nextWord),
+                  ),
+                );
+              },
             ),
           ],
         ),

@@ -10,12 +10,15 @@ class SelectedWordNotifier extends Notifier<WordItem?> {
 
   void select(WordItem word) async {
     state = word;
+  }
+
+  Future<List<WordItem>> get getAdjacent async {
     adjacentWords = await ref
         .read(databaseProvider.notifier)
         .searchAdjacent(state!.id);
-  }
 
-  List<WordItem> get getAdjacent => adjacentWords;
+    return adjacentWords;
+  }
 }
 
 final selectedWordProvider = NotifierProvider<SelectedWordNotifier, WordItem?>(

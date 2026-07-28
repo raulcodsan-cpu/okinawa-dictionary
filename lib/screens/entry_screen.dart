@@ -20,10 +20,6 @@ class _EntryScreen extends ConsumerState<EntryScreen> {
   late final PageController _pageController;
   bool isFavourite = false;
 
-  void onAdjacentPressed(int id) {
-    _pageController.jumpToPage(id - 1);
-  }
-
   @override
   void initState() {
     //Convert ti 0-based
@@ -51,7 +47,7 @@ class _EntryScreen extends ConsumerState<EntryScreen> {
   }
 
   void onHomePressed() {
-    Navigator.of(context).pop();
+    Navigator.of(context).popUntil(ModalRoute.withName('SearchScreen'));
   }
 
   @override
@@ -107,7 +103,6 @@ class _EntryScreen extends ConsumerState<EntryScreen> {
               return EntryWidget(
                 key: ValueKey(snapshot.data),
                 word: snapshot.data!,
-                onAdjacentPressed: onAdjacentPressed,
               );
             },
           );
