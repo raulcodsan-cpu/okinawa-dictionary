@@ -1,31 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uchinaguchi_jisho/models/word_item.dart';
 import 'package:uchinaguchi_jisho/screens/entry_screen.dart';
 
-class AdjacentWords extends ConsumerStatefulWidget {
-  const AdjacentWords({super.key, required this.adjacentWords});
-  final List<WordItem> adjacentWords;
+class AdjacentWords extends StatelessWidget {
+  const AdjacentWords({super.key, required this.words});
+  final List<WordItem> words;
 
-  @override
-  ConsumerState<ConsumerStatefulWidget> createState() {
-    return _AdjacentWords();
-  }
-}
-
-class _AdjacentWords extends ConsumerState<AdjacentWords> {
   @override
   Widget build(BuildContext context) {
-    /* void onAdjacentPressed(WordItem adjacentWord) {
-      ref.watch(selectedWordProvider.notifier).select(adjacentWord);
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => EntryScreen(word: adjacentWord),
-        ),
-      );
-    } */
-    final previousWord = widget.adjacentWords[0];
-    final nextWord = widget.adjacentWords[1];
+    final previousWord = words[0];
+    final nextWord = words[2];
     final previousHasComma = previousWord.kana.contains(',');
     final nextHasComma = nextWord.kana.contains(',');
 

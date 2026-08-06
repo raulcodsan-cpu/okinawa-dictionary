@@ -100,37 +100,6 @@ class FavouritesNotifier extends _$FavouritesNotifier {
     return favourites.any((item) => item.id == word.id);
   }
 
-  /*  Future<List<WordItem>> getFavouriteWords() async {
-    final db = await database;
-    final results = await db.rawQuery('''
-      SELECT dictionary.* FROM favourites
-      INNER JOIN dictionary ON favourites.word_id = dictionary.id
-      ORDER BY favourites.id DESC
-      ''');
-    //---------------------- TODO: Take note -----------------------------------------
-    return List.generate(results.length, ((index) {
-      final List<String> loadedMeanings = [];
-      for (var i = 1; i <= 3; i++) {
-        if (results[index]['meaning$i'] == null) {
-          continue;
-        }
-        loadedMeanings.add(results[index]['meaning$i'].toString());
-      }
-      final String kana = results[index]['kana'].toString().replaceAll(
-        RegExp(r"[\[\]']"),
-        '',
-      );
-      return WordItem(
-        id: results[index]['id'] as int,
-        word: results[index]['word'] as String,
-        ipa: results[index]['ipa'] as String,
-        kana: kana,
-        meanings: loadedMeanings,
-      );
-    }));
-  }
- */
-
   Future<void> removeFavWord() async {
     if (!ref.mounted) {
       return;

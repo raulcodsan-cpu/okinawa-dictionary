@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uchinaguchi_jisho/data/database_provider.dart';
-import 'package:uchinaguchi_jisho/data/selected_word_provider.dart';
 import 'package:uchinaguchi_jisho/models/word_item.dart';
 import 'package:uchinaguchi_jisho/screens/entry_screen.dart';
 import 'package:uchinaguchi_jisho/screens/favourites_screen.dart';
@@ -135,7 +134,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   return SearchEntry(
                     word: word,
                     onTap: () {
-                      ref.read(selectedWordProvider.notifier).select(word);
+                      //ref.read(selectedWordProvider.notifier).select(word);
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => EntryScreen(word: word),

@@ -8,8 +8,12 @@ import 'package:uchinaguchi_jisho/data/selected_word_provider.dart';
 import 'package:uchinaguchi_jisho/models/word_item.dart';
 import 'package:flutter/foundation.dart';
 
-class DatabaseNotifier extends StateNotifier<List<Map<String, dynamic>>> {
-  DatabaseNotifier(this._ref) : super(const []);
+class DatabaseNotifier
+    extends StateNotifier<AsyncValue<List<Map<String, dynamic>>>> {
+  DatabaseNotifier(this._ref)
+    : super(
+        const AsyncValue.loading(),
+      ); //------------------------ TODO: Take note---------------
   final Ref _ref;
 
   static Database? _database;
@@ -106,20 +110,18 @@ class DatabaseNotifier extends StateNotifier<List<Map<String, dynamic>>> {
         ),
       );
     }
+
     return loadedWords;
   }
 
-  //Search adjacent words (for entry_screen)
-  Future<List<WordItem>> searchAdjacent(int wordId) async {
+  Future<List<WordItem>> searchFromId(int wordId) async {
     final db = await database;
-
     //TODO: Handle case first and last word.
-    //TODO: Comment on the function.
 
     final result = await db.query(
       'dictionary',
-      where: 'id IN (?, ?)',
-      whereArgs: [wordId + 1, wordId - 1],
+      where: 'id IN (?, ?, ?)',
+      whereArgs: [wordId - 1, wordId, wordId + 1],
     );
 
     final List<WordItem> loadedWords = [];
@@ -150,44 +152,11 @@ class DatabaseNotifier extends StateNotifier<List<Map<String, dynamic>>> {
 
     return loadedWords;
   }
-
-  Future<WordItem> searchFromId(int wordId) async {
-    final db = await database;
-
-    //TODO: Handle case first and last word.
-
-    final result = await db.query(
-      'dictionary',
-      where: 'id IN (?)',
-      whereArgs: [wordId],
-    );
-
-    final String kana = result[0]['kana'].toString().replaceAll(
-      RegExp(r"[\[\]']"),
-      '',
-    );
-    final List<String> loadedMeanings = [];
-    for (var i = 1; i <= 3; i++) {
-      if (result[0]['meaning$i'] == null) {
-        continue;
-      }
-      loadedMeanings.add(result[0]['meaning$i'].toString());
-    }
-    final WordItem loadedWord;
-    loadedWord = WordItem(
-      id: result[0]['id'] as int,
-      word: result[0]['word'] as String,
-      ipa: result[0]['ipa'] == null ? '' : result[0]['ipa'] as String,
-      kana: kana,
-      meanings: loadedMeanings,
-    );
-
-    _ref.read(selectedWordProvider.notifier).select(loadedWord);
-    return loadedWord;
-  }
 }
 
 final databaseProvider =
-    StateNotifierProvider<DatabaseNotifier, List<Map<String, dynamic>>>(
-      (ref) => DatabaseNotifier(ref),
-    );
+    // ------------------------ TODO: Take note ------------------------
+    StateNotifierProvider<
+      DatabaseNotifier,
+      AsyncValue<List<Map<String, dynamic>>>
+    >((ref) => DatabaseNotifier(ref));

@@ -88,18 +88,17 @@ class _EntryScreen extends ConsumerState<EntryScreen> {
         controller: _pageController,
         itemBuilder: (context, globalIndex) {
           //Bring back to 1-base
-          final targetId = globalIndex + 1;
 
-          //Get next/previous from db
-          return FutureBuilder<WordItem>(
-            future: ref.watch(databaseProvider.notifier).searchFromId(targetId),
+          return FutureBuilder<List<WordItem>>(
+            future: ref
+                .watch(databaseProvider.notifier)
+                .searchFromId(globalIndex + 1),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError || !snapshot.hasData) {
                 return const Center(child: Text('Error loading entry'));
               }
-
               return EntryWidget(
                 key: ValueKey(snapshot.data),
                 word: snapshot.data!,

@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:uchinaguchi_jisho/data/selected_word_provider.dart';
 import 'package:uchinaguchi_jisho/models/word_item.dart';
-import 'package:uchinaguchi_jisho/widgets/adjacent_words_ready.dart';
-import 'package:uchinaguchi_jisho/widgets/adjacent_words_waiting.dart';
+import 'package:uchinaguchi_jisho/widgets/adjacent_words.dart';
 
 class EntryWidget extends ConsumerWidget {
   const EntryWidget({super.key, required this.word});
-  final WordItem word;
+  final List<WordItem> word;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -26,12 +24,12 @@ class EntryWidget extends ConsumerWidget {
                 child: Column(
                   children: [
                     Text(
-                      word.word,
+                      word[1].word,
                       style: Theme.of(context).textTheme.titleLarge,
                       textAlign: TextAlign.center,
                     ),
                     Text(
-                      '(${word.id})',
+                      '(${word[1].id})',
                       style: Theme.of(context).textTheme.labelLarge,
                     ),
                   ],
@@ -40,17 +38,22 @@ class EntryWidget extends ConsumerWidget {
               SizedBox(width: 0.0, height: 30),
               Text('カナ：'),
               Row(
-                children: [SizedBox(width: 30, height: 0.0), Text(word.kana)],
+                children: [
+                  SizedBox(width: 30, height: 0.0),
+                  Text(word[1].kana),
+                ],
               ),
               Text('発音：'),
-              Row(children: [SizedBox(width: 30, height: 0.0), Text(word.ipa)]),
+              Row(
+                children: [SizedBox(width: 30, height: 0.0), Text(word[1].ipa)],
+              ),
               Text('説明：'),
               Padding(
                 padding: EdgeInsetsGeometry.symmetric(horizontal: 30),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    for (final entries in word.meanings) ...[
+                    for (final entries in word[1].meanings) ...[
                       //----------------------- TODO: Take note ---------------
                       Text(entries),
                       const SizedBox(height: 10),
@@ -59,7 +62,8 @@ class EntryWidget extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              FutureBuilder(
+              AdjacentWords(words: word),
+              /* FutureBuilder(
                 future: ref.watch(selectedWordProvider.notifier).getAdjacent,
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {
@@ -71,7 +75,7 @@ class EntryWidget extends ConsumerWidget {
 
                   return AdjacentWords(adjacentWords: snapshot.data!);
                 },
-              ),
+              ), */
             ],
           ),
         ),
