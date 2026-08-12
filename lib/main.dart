@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:uchinaguchi_jisho/screens/favourites_screen.dart';
 import 'package:uchinaguchi_jisho/screens/search_screen.dart';
 
 final theme = ThemeData(
@@ -56,7 +57,10 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       theme: theme,
       initialRoute: 'SearchScreen',
-      routes: {'SearchScreen': (context) => SearchScreen()},
+      routes: {
+        'SearchScreen': (context) => SearchScreen(),
+        'FavouritesScreen': (context) => FavouritesScreen(),
+      },
     );
   }
 }

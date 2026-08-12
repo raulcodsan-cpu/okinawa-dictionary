@@ -4,8 +4,9 @@ import 'package:uchinaguchi_jisho/models/word_item.dart';
 import 'package:uchinaguchi_jisho/widgets/adjacent_words.dart';
 
 class EntryWidget extends ConsumerWidget {
-  const EntryWidget({super.key, required this.word});
+  const EntryWidget({super.key, required this.word, required this.goToPage});
   final List<WordItem> word;
+  final void Function(int) goToPage;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -62,20 +63,7 @@ class EntryWidget extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              AdjacentWords(words: word),
-              /* FutureBuilder(
-                future: ref.watch(selectedWordProvider.notifier).getAdjacent,
-                builder: (context, snapshot) {
-                  if (snapshot.hasError) {
-                    return const Text('Error retrieveing adjacent words');
-                  }
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return AdjacentWordsWaiting();
-                  }
-
-                  return AdjacentWords(adjacentWords: snapshot.data!);
-                },
-              ), */
+              AdjacentWords(words: word, goToPage: goToPage),
             ],
           ),
         ),

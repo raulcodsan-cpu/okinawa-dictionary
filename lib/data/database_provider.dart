@@ -4,16 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:uchinaguchi_jisho/data/selected_word_provider.dart';
 import 'package:uchinaguchi_jisho/models/word_item.dart';
 import 'package:flutter/foundation.dart';
 
-class DatabaseNotifier
-    extends StateNotifier<AsyncValue<List<Map<String, dynamic>>>> {
-  DatabaseNotifier(this._ref)
-    : super(
-        const AsyncValue.loading(),
-      ); //------------------------ TODO: Take note---------------
+class oldDatabaseNotifier extends StateNotifier<List<Map<String, dynamic>>> {
+  oldDatabaseNotifier(this._ref)
+    : super([]); //------------------------ TODO: Take note---------------
   final Ref _ref;
 
   static Database? _database;
@@ -154,9 +150,8 @@ class DatabaseNotifier
   }
 }
 
-final databaseProvider =
+final oldDatabaseProvider =
     // ------------------------ TODO: Take note ------------------------
-    StateNotifierProvider<
-      DatabaseNotifier,
-      AsyncValue<List<Map<String, dynamic>>>
-    >((ref) => DatabaseNotifier(ref));
+    StateNotifierProvider<oldDatabaseNotifier, List<Map<String, dynamic>>>(
+      (ref) => oldDatabaseNotifier(ref),
+    );

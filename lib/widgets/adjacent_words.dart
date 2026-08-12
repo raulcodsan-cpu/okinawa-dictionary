@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:uchinaguchi_jisho/models/word_item.dart';
-import 'package:uchinaguchi_jisho/screens/entry_screen.dart';
 
 class AdjacentWords extends StatelessWidget {
-  const AdjacentWords({super.key, required this.words});
+  const AdjacentWords({super.key, required this.words, required this.goToPage});
   final List<WordItem> words;
+  final void Function(int) goToPage;
 
   @override
   Widget build(BuildContext context) {
@@ -43,13 +43,7 @@ class AdjacentWords extends StatelessWidget {
                     : previousWord.kana,
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => EntryScreen(word: previousWord),
-                  ),
-                );
-              },
+              onPressed: () => goToPage(previousWord.id),
             ),
           ],
         ),
@@ -79,13 +73,7 @@ class AdjacentWords extends StatelessWidget {
                 textAlign: TextAlign.start,
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => EntryScreen(word: nextWord),
-                  ),
-                );
-              },
+              onPressed: () => goToPage(nextWord.id),
             ),
           ],
         ),

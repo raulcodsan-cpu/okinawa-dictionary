@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:uchinaguchi_jisho/data/selected_word_provider.dart';
+
 import 'package:uchinaguchi_jisho/models/word_item.dart';
 
 part 'fav_provider.g.dart';
@@ -86,27 +86,18 @@ class FavouritesNotifier extends _$FavouritesNotifier {
     }));
   }
 
-  Future<bool> isFavourite() async {
+  Future<bool> isFavourite(WordItem word) async {
     if (!ref.mounted) {
       return false;
     }
 
-    final word = ref.read(selectedWordProvider);
-    if (word == null) {
-      return false;
-    }
     // ------------------------------------- TODO: Add note ----------------------
     final favourites = await future;
     return favourites.any((item) => item.id == word.id);
   }
 
-  Future<void> removeFavWord() async {
+  Future<void> removeFavWord(WordItem word) async {
     if (!ref.mounted) {
-      return;
-    }
-
-    final word = ref.read(selectedWordProvider);
-    if (word == null) {
       return;
     }
 
@@ -127,13 +118,8 @@ class FavouritesNotifier extends _$FavouritesNotifier {
     // ('Word deleted correctly');
   }
 
-  Future<void> addFavouriteWord() async {
+  Future<void> addFavouriteWord(WordItem word) async {
     if (!ref.mounted) {
-      return;
-    }
-
-    final word = ref.read(selectedWordProvider);
-    if (word == null) {
       return;
     }
 

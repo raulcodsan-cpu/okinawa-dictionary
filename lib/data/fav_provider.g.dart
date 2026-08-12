@@ -34,7 +34,7 @@ final class FavouritesNotifierProvider
 }
 
 String _$favouritesNotifierHash() =>
-    r'e60f20a8134f0e8dee63b34692ac18ec6cf5ac1d';
+    r'67d48da53f9a3fda79995ccbab5246136a2b4b3a';
 
 abstract class _$FavouritesNotifier extends $AsyncNotifier<List<WordItem>> {
   FutureOr<List<WordItem>> build();

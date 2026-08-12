@@ -1,4 +1,3 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uchinaguchi_jisho/data/database_provider.dart';
@@ -19,25 +18,36 @@ class EntryScreen extends ConsumerStatefulWidget {
 class _EntryScreen extends ConsumerState<EntryScreen> {
   late final PageController _pageController;
   bool isFavourite = false;
+  late List<WordItem> cachedWords;
+
+  void onHomePressed() {
+    Navigator.of(context).pop();
+  }
+
+  void _goToPage(int id) {
+    _pageController.jumpToPage(id - 1);
+  }
 
   @override
   void initState() {
     //Convert ti 0-based
     final int clickedIndex = widget.word.id - 1;
     _pageController = PageController(initialPage: clickedIndex);
-    updateFav();
+    updateFav(widget.word);
 
-    // ------------------------------------ TODO: Take note ----------------------------
     super.initState();
   }
 
-  void updateFav() async {
-    final favourite = await ref.read(favouritesProvider.notifier).isFavourite();
+  void updateFav(WordItem word) async {
+    final favourite = await ref
+        .read(favouritesProvider.notifier)
+        .isFavourite(word);
     if (mounted) {
       setState(() {
         isFavourite = favourite;
       });
     }
+    print("On updateFav: ${word.word}");
   }
 
   @override
@@ -46,12 +56,10 @@ class _EntryScreen extends ConsumerState<EntryScreen> {
     super.dispose();
   }
 
-  void onHomePressed() {
-    Navigator.of(context).popUntil(ModalRoute.withName('SearchScreen'));
-  }
-
   @override
   Widget build(BuildContext context) {
+    WordItem currentWord = widget.word;
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -60,13 +68,19 @@ class _EntryScreen extends ConsumerState<EntryScreen> {
             onPressed: () {
               if (isFavourite) {
                 setState(() {
-                  ref.watch(favouritesProvider.notifier).removeFavWord();
+                  ref
+                      .watch(favouritesProvider.notifier)
+                      .removeFavWord(currentWord);
                   isFavourite = false;
+                  print('On fav button push: ${currentWord.word}');
                 });
               } else {
                 setState(() {
-                  ref.read(favouritesProvider.notifier).addFavouriteWord();
+                  ref
+                      .read(favouritesProvider.notifier)
+                      .addFavouriteWord(currentWord);
                   isFavourite = true;
+                  print('On fav button push: ${currentWord.word}');
                 });
               }
             },
@@ -81,28 +95,26 @@ class _EntryScreen extends ConsumerState<EntryScreen> {
       body: PageView.builder(
         onPageChanged: (value) {
           setState(() {
-            updateFav();
+            updateFav(currentWord);
           });
         },
-        dragStartBehavior: DragStartBehavior.start,
+        //dragStartBehavior: DragStartBehavior.start,
         controller: _pageController,
         itemBuilder: (context, globalIndex) {
           //Bring back to 1-base
-
-          return FutureBuilder<List<WordItem>>(
+          return FutureBuilder(
             future: ref
-                .watch(databaseProvider.notifier)
+                .watch(oldDatabaseProvider.notifier)
                 .searchFromId(globalIndex + 1),
             builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError || !snapshot.hasData) {
-                return const Center(child: Text('Error loading entry'));
+              if (snapshot.hasData) {
+                cachedWords = snapshot.data!;
+
+                currentWord = snapshot.data![1];
+                print("On Listview build: ${currentWord.word}");
+                return EntryWidget(word: snapshot.data!, goToPage: _goToPage);
               }
-              return EntryWidget(
-                key: ValueKey(snapshot.data),
-                word: snapshot.data!,
-              );
+              return Center(child: const Text('Error'));
             },
           );
         },

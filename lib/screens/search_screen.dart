@@ -6,6 +6,7 @@ import 'package:uchinaguchi_jisho/data/database_provider.dart';
 import 'package:uchinaguchi_jisho/models/word_item.dart';
 import 'package:uchinaguchi_jisho/screens/entry_screen.dart';
 import 'package:uchinaguchi_jisho/screens/favourites_screen.dart';
+import 'package:uchinaguchi_jisho/screens/new_entryScreen.dart';
 import 'package:uchinaguchi_jisho/widgets/search_entry.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
@@ -44,7 +45,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         _isLoading = true;
       });
 
-      results = await ref.read(databaseProvider.notifier).searchWords(query);
+      results = await ref.read(oldDatabaseProvider.notifier).searchWords(query);
 
       setState(() {
         _loadedQuery = results;
@@ -137,7 +138,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                       //ref.read(selectedWordProvider.notifier).select(word);
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => EntryScreen(word: word),
+                          builder: (context) => newEntryScreen(word: word),
                         ),
                       );
                     },
