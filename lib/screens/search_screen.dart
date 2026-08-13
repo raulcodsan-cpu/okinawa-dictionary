@@ -2,11 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:uchinaguchi_jisho/data/database_provider.dart';
+import 'package:uchinaguchi_jisho/data/new_db_provider.dart';
 import 'package:uchinaguchi_jisho/models/word_item.dart';
-import 'package:uchinaguchi_jisho/screens/entry_screen.dart';
 import 'package:uchinaguchi_jisho/screens/favourites_screen.dart';
-import 'package:uchinaguchi_jisho/screens/new_entryScreen.dart';
+import 'package:uchinaguchi_jisho/screens/entry_screen.dart';
 import 'package:uchinaguchi_jisho/widgets/search_entry.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
@@ -18,44 +17,38 @@ class SearchScreen extends ConsumerStatefulWidget {
 
 class _SearchScreenState extends ConsumerState<SearchScreen> {
   final _formKey = GlobalKey<FormState>();
-  List<WordItem> _loadedQuery = [];
-  //final selectedWord = ref.watch(selectedWordProvider); -------------------------------- TODO: Take note ---------------------------------------
+  String _searchQuery = '';
   Timer? _inputTimer;
-  bool _isLoading = false;
+  final bool _isLoading = false;
 
-  void _onInputChange(String query) {
-    List<WordItem> results = [];
+  //Forms OnChange passes the value to the function even if its only the Func. pointer.
+  void _onInputChange(String newQuery) {
     //Check if the timer is active, if is cancel because a new input has been made
     //When using null check operator ??, you can conditionally access the variable with ? (as opposed to !)
     if (_inputTimer?.isActive ?? false) {
       _inputTimer!.cancel();
     }
 
-    //If search bar is empty (cleared), clear results.
-    if (query.trim().isEmpty) {
+    _inputTimer = Timer(const Duration(milliseconds: 300), () {
       setState(() {
-        _loadedQuery = [];
-        _isLoading = false;
-      });
-      return;
-    }
-
-    _inputTimer = Timer(const Duration(milliseconds: 500), () async {
-      setState(() {
-        _isLoading = true;
-      });
-
-      results = await ref.read(oldDatabaseProvider.notifier).searchWords(query);
-
-      setState(() {
-        _loadedQuery = results;
-        _isLoading = false;
+        _searchQuery = newQuery.trim();
       });
     });
   }
 
+  //Timer disposal if null
+  @override
+  void dispose() {
+    _inputTimer?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    //Reactively watch the search query. If empty, return an empty list immediately.
+    final searchResultsAsync = _searchQuery.isEmpty
+        ? const AsyncValue<List<WordItem>>.data([])
+        : ref.watch(searchWordsProvider(_searchQuery));
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -123,27 +116,34 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   focusColor: Colors.white,
                 ),
                 onChanged: _onInputChange,
+                //The changed value is being passed to the function.
               ),
             ),
             SizedBox(height: 20),
             Expanded(
-              child: ListView.builder(
-                itemCount: _loadedQuery.length,
-                itemBuilder: (context, index) {
-                  final word = _loadedQuery[index];
+              child: searchResultsAsync.when(
+                data: (words) {
+                  return ListView.builder(
+                    itemCount: words.length,
+                    itemBuilder: (context, index) {
+                      final word = words[index];
 
-                  return SearchEntry(
-                    word: word,
-                    onTap: () {
-                      //ref.read(selectedWordProvider.notifier).select(word);
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => newEntryScreen(word: word),
-                        ),
+                      return SearchEntry(
+                        word: word,
+                        onTap: () {
+                          //ref.read(selectedWordProvider.notifier).select(word);
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => EntryScreen(word: word),
+                            ),
+                          );
+                        },
                       );
                     },
                   );
                 },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (error, stackTrace) => Text('Error on fetch: $error'),
               ),
             ),
           ],
