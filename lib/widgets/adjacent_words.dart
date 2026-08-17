@@ -8,10 +8,29 @@ class AdjacentWords extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final previousWord = words[0];
-    final nextWord = words[2];
-    final previousHasComma = previousWord.kana.contains(',');
-    final nextHasComma = nextWord.kana.contains(',');
+    WordItem? previousWord;
+    WordItem? nextWord;
+
+    //--------------------------------------- Adding case for first/last words.
+    if (words.length == 2) {
+      if (words[0].id == 1) {
+        previousWord = null;
+        nextWord = words[1];
+      } else {
+        previousWord = words[0];
+        nextWord = null;
+      }
+    } else {
+      previousWord = words[0];
+      nextWord = words[2];
+    }
+
+    final previousHasComma = (previousWord == null)
+        ? false
+        : previousWord.kana.contains(',');
+    final nextHasComma = (nextWord == null)
+        ? false
+        : nextWord.kana.contains(',');
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -21,62 +40,66 @@ class AdjacentWords extends StatelessWidget {
           children: [
             Text('前の単語', textAlign: TextAlign.start),
             Text(
-              '(${previousWord.id.toString()})',
+              (previousWord == null) ? '' : '(${previousWord.id.toString()})',
               style: Theme.of(context).textTheme.labelSmall,
             ),
           ],
         ),
-        Row(
-          children: [
-            const SizedBox(width: 30),
-            TextButton(
-              style: ButtonStyle(
-                alignment: AlignmentGeometry.topLeft,
-                padding: WidgetStatePropertyAll(
-                  EdgeInsetsGeometry.only(top: 8),
-                ),
-              ),
-              child: Text(
-                textAlign: TextAlign.start,
-                previousHasComma
-                    ? previousWord.kana.split(',')[0]
-                    : previousWord.kana,
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-              onPressed: () => goToPage(previousWord.id),
-            ),
-          ],
+        AdjacentDisplay(
+          word: previousWord,
+          goToPage: goToPage,
+          hasComma: previousHasComma,
         ),
 
         Row(
           children: [
             Text('次の単語', textAlign: TextAlign.start),
             Text(
-              '(${nextWord.id.toString()})',
+              (nextWord == null) ? '' : '(${nextWord.id.toString()})',
               style: Theme.of(context).textTheme.labelSmall,
             ),
           ],
         ),
 
-        Row(
-          children: [
-            const SizedBox(width: 30),
-            TextButton(
-              style: ButtonStyle(
-                alignment: AlignmentGeometry.topLeft,
-                padding: WidgetStatePropertyAll(
-                  EdgeInsetsGeometry.only(top: 8),
-                ),
-              ),
-              child: Text(
-                nextHasComma ? nextWord.kana.split(',')[0] : nextWord.kana,
-                textAlign: TextAlign.start,
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-              onPressed: () => goToPage(nextWord.id),
-            ),
-          ],
+        AdjacentDisplay(
+          word: nextWord,
+          goToPage: goToPage,
+          hasComma: nextHasComma,
         ),
+      ],
+    );
+  }
+}
+
+class AdjacentDisplay extends StatelessWidget {
+  AdjacentDisplay({
+    super.key,
+    required this.word,
+    required this.goToPage,
+    this.hasComma = false,
+  });
+  bool hasComma;
+  WordItem? word;
+  final void Function(int) goToPage;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const SizedBox(width: 30),
+        if (word != null)
+          TextButton(
+            style: ButtonStyle(
+              alignment: AlignmentGeometry.topLeft,
+              padding: WidgetStatePropertyAll(EdgeInsetsGeometry.only(top: 8)),
+            ),
+            child: Text(
+              hasComma ? word!.kana.split(',')[0] : word!.kana,
+              textAlign: TextAlign.start,
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            onPressed: () => goToPage(word!.id),
+          ),
       ],
     );
   }
