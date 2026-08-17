@@ -4,12 +4,23 @@ import 'package:uchinaguchi_jisho/models/word_item.dart';
 import 'package:uchinaguchi_jisho/widgets/adjacent_words.dart';
 
 class EntryWidget extends ConsumerWidget {
-  const EntryWidget({super.key, required this.word, required this.goToPage});
-  final List<WordItem> word;
+  const EntryWidget({super.key, required this.words, required this.goToPage});
+  final List<WordItem> words;
   final void Function(int) goToPage;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    late WordItem currentWord;
+    if (words.length == 2) {
+      if (words[0].id == 1) {
+        currentWord = words[0];
+      } else {
+        currentWord = words[1];
+      }
+    } else {
+      currentWord = words[1];
+    }
+
     return Padding(
       padding: const EdgeInsets.all(30.0),
       child: InteractiveViewer(
@@ -25,12 +36,12 @@ class EntryWidget extends ConsumerWidget {
                 child: Column(
                   children: [
                     Text(
-                      word[1].word,
+                      currentWord.word,
                       style: Theme.of(context).textTheme.titleLarge,
                       textAlign: TextAlign.center,
                     ),
                     Text(
-                      '(${word[1].id})',
+                      '(${currentWord.id})',
                       style: Theme.of(context).textTheme.labelLarge,
                     ),
                   ],
@@ -41,12 +52,15 @@ class EntryWidget extends ConsumerWidget {
               Row(
                 children: [
                   SizedBox(width: 30, height: 0.0),
-                  Text(word[1].kana),
+                  Text(currentWord.kana),
                 ],
               ),
               Text('発音：'),
               Row(
-                children: [SizedBox(width: 30, height: 0.0), Text(word[1].ipa)],
+                children: [
+                  SizedBox(width: 30, height: 0.0),
+                  Text(currentWord.ipa),
+                ],
               ),
               Text('説明：'),
               Padding(
@@ -54,7 +68,7 @@ class EntryWidget extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    for (final entries in word[1].meanings) ...[
+                    for (final entries in currentWord.meanings) ...[
                       //----------------------- TODO: Take note ---------------
                       Text(entries),
                       const SizedBox(height: 10),
@@ -63,7 +77,7 @@ class EntryWidget extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              AdjacentWords(words: word, goToPage: goToPage),
+              AdjacentWords(words: words, goToPage: goToPage),
             ],
           ),
         ),

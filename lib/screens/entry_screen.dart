@@ -133,7 +133,7 @@ class _newEntryScreen extends ConsumerState<EntryScreen> {
                   if (words.isEmpty) {
                     return const Center(child: Text('No word found'));
                   }
-                  return EntryWidget(word: words, goToPage: _goToPage);
+                  return EntryWidget(words: words, goToPage: _goToPage);
                 },
                 error: (error, stackTrace) =>
                     Center(child: Text('Error loading word: $error')),
